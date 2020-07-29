@@ -8,9 +8,9 @@ void SimulationApp::setup()
 	gl::enableVerticalSync();
 	setFrameRate(30);
 
-	scene.camera.setup();
+	scene.camera.setCam();
 	scene.setup();
-	bot.setup(scene.mGlslShadow);
+	bot.setup(scene.getPartShadow());
 
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
@@ -20,25 +20,25 @@ void SimulationApp::update()
 {
 	// Store time so each render pass uses the same value
 
-	gui.updateCameraGUI(scene.camera);
-	gui.updateCamera(scene.camera);
-	gui.updateScene(scene);
+	// gui.updateCameraGUI(scene.camera);
+	// gui.updateCamera(scene.camera);
+	gui.updateScene(scene, bot);
     gui.updateRobotControl(bot);
     gui.updateRobotConfig(bot);
 
-	// TODO: calculate forces
-	// TODO: update kinematics
-
-	// transfer render data to scene
-	// scene.setPart(bot.root);
+	// scene.setPart(bot.body);
+	bot.setChildren();
+	bot.calcPoses(bot.body);
+	// bot.calcPoses(bot.body.children[0]);
 }
 
 void SimulationApp::draw()
 {
-	gl::clear( Color(0.9f, 0.7f, 0.7f) );
-	ci::gl::ScopedTextureBind texScope( scene.mShadowMapTex, (uint8_t) 0 );
-	scene.drawModelMain(bot.root);
-	scene.drawModelShadows(bot.root);
+	gl::clear( Color(0.4f, 0.4f, 0.6f) );
+	ci::gl::ScopedTextureBind texScope( scene.getShadowMapTex(), (uint8_t) 0 );
+	scene.drawModelMain(bot.body);
+	scene.drawModelShadows(bot.body);
+	bot.visualization();
 	scene.drawFloor();
 }
 

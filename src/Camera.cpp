@@ -1,6 +1,6 @@
 #include "Camera.h"
 
-void Cam::setup()
+void Cam::setCam()
 {
 	float x = cameraDistance * sinf(cameraTheta) * cosf(cameraPhi);
 	float z = cameraDistance * sinf(cameraTheta) * sinf(cameraPhi);
@@ -8,4 +8,5 @@ void Cam::setup()
 
 	mCam.lookAt(glm::vec3(x, y+yOff, z), glm::vec3(0, yOff,0));
 	mCam.setPerspective(30, ci::app::getWindowAspectRatio(), 100, 4000);
+	mCamUi = ci::CameraUi( &mCam, ci::app::getWindow() );
 }

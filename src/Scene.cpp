@@ -1,3 +1,4 @@
+
 #include "Scene.h"
 
 Scene::Scene()
@@ -28,7 +29,7 @@ void Scene::setup()
 	}
 
 	mLightPos = ci::vec3(500.0f, 1000.0f, 0.0f);
-		
+
 	mLightCam.setPerspective(60.0f, mFbo->getAspectRatio(), 10.f, 2000.0f);
 	mLightCam.lookAt(mLightPos, ci::vec3(0.0f));
 
@@ -39,7 +40,7 @@ void Scene::setup()
 		CI_LOG_EXCEPTION( "mGlslShadow load failed", exc );
 		std::terminate();
 	}
-	
+
 	try {
 		mGlslShadowFloor = ci::gl::GlslProg::create(ci::app::loadAsset("../assets/shadow_shader_floor.vert"), ci::app::loadAsset("../assets/shadow_shader_floor.frag"));
 	}
@@ -55,34 +56,33 @@ void Scene::setup()
 	// shadowedBatch		= ci::gl::Batch::create( shape, mGlslShadow);
 }
 
+void Scene::clearParts()
+{
+	parts.erase(parts.begin(),parts.end());
+}
 
-// // TODO: remove?
 // void Scene::setPart(Link &parent)
 // {
 // 	Part newPart;
-// 	newPart.pColor = parent.pColor;
-// 	float tx = parent.centerPos.x;
-// 	float ty = parent.centerPos.y;
-// 	float tz = parent.centerPos.z;
-// 	float rotx = parent.centerRot.x;
-// 	float roty = parent.centerRot.y;
-// 	float rotz = parent.centerRot.z;
+// 	newPart.pColor = ci::Color(0.4f,0.8f,0.6f);
+// 	newPart.mainBatch = parent->mainBatch;
+// 	newPart.shadowedBatch = parent->shadowedBatch;
+// 	float tx = parent->centerPos.x;
+// 	float tz = parent->centerPos.z;
+// 	float ty = parent->centerPos.y;
+// 	float rotx = parent->centerRot.x;
+// 	float rotz = parent->centerRot.z;
+// 	float roty = parent->centerRot.y;
 // 	newPart.setPartPose(tx, ty, tz, rotx, roty, rotz, 1);
-// 	newPart.mainBatch = parent.mainBatch;
-// 	newPart.shadowedBatch = parent.shadowedBatch;
-
 // 	parts.push_back(newPart);
-	
-// 	for (Link child : parent.children)
-// 	{
-// 		setPart(child);
-// 	}
+// 	// for (Link child : parent->children)
+// 	// {
+// 	// 	setPart(child);
+// 	// }
 // }
 
 void Scene::drawModelMain(Link &parent)
 {
-	// fprintf(stderr, "\n numParts: %d", static_cast<int>(parts.size()));
-
 	// Set polygon offset to battle shadow acne
 	ci::gl::enable( GL_POLYGON_OFFSET_FILL );
 	glPolygonOffset( 2.0f, 2.0f );
@@ -96,7 +96,7 @@ void Scene::drawModelMain(Link &parent)
     updateModelShadows();
 
     // Draw physical parts here
-	drawPart(parent, false);
+	drawPart( parent, false );
 	
 	// Disable polygon offset for final render
 	ci::gl::disable( GL_POLYGON_OFFSET_FILL );
@@ -106,39 +106,130 @@ void Scene::drawModelShadows(Link &parent)
 {
     // Set view to viewing camera angle
 	ci::gl::setMatrices( camera.mCam );
-
+	
     //Draw part shadows here
-    drawPart(parent, true);
+	drawPart( parent, true);
 }
 
-// void Scene::drawPart(ci::gl::BatchRef batch, glm::mat4 partPose, ci::Color pColor)
 void Scene::drawPart(Link &parent, bool shadow)
 {
-	// TODO: draw chains within the same pushModelMatrix (pushModelMatrix, Multmodelmatrix, drawlink1, multmodelmatrix, drawlink2, ..., popModelMatrix)
-	ci::gl::pushModelMatrix();
 	ci::gl::color( parent.pColor );
-    ci::gl::multModelMatrix( parent.pose );
-	if (shadow)
-		parent.shadowedBatch->draw();
-		// fprintf(stderr, "\n shadowed");}
-	else
-		parent.mainBatch->draw();	
-		// fprintf(stderr, "\n main");}
-		
+
+
+	//tmp for testing
+	ci::gl::pushModelMatrix();
+	ci::gl::multModelMatrix(parent.poseOffset);
+	ci::gl::multModelMatrix(parent.pose);
+
+	if (parent.visible)
+	{
+		if (shadow)
+			parent.shadowedBatch->draw();
+		else
+			parent.mainBatch->draw();
+	}
+
+	// TODO: figure out why this doesn't do anything
+	if (parent.children.size() == 1)
+	{
+		ci::gl::color( parent.children[0].pColor );
+		ci::gl::multModelMatrix(parent.poseOffset);
+		ci::gl::multModelMatrix(parent.children[0].pose);
+
+		if (parent.children[0].visible)
+		{
+			if (shadow)
+				parent.children[0].shadowedBatch->draw();
+			else
+				parent.children[0].mainBatch->draw();
+		}
+	}
+
 	ci::gl::popModelMatrix();
 
-	if (shadow)
-		for (Link child : parent.children)
-		{
-			drawPart(child, shadow);
-		}
-	else
-		for (Link child : parent.children)
-		{
-			drawPart(child, shadow);
-		}
+	// TODO: draw serial chains within the same pushModelMatrix (pushModelMatrix, Multmodelmatrix, drawlink1, multmodelmatrix, drawlink2, ..., popModelMatrix)
+	// this implementation only works for robots that have a body with only serial chains attached. Something that has parallel linkages after the body will not work.
+	// Needs to backtrack through the multModelMatrices whenever the end of a serial chain is reached so it can recursively draw each parallel chain
+
+	// or use drawPart() as a manager function and send to drawSerialChainPart or drawParallelChainPart depending on number of children - just need to figure out how to keep track of model matrices
+	// std::cout << "parent name: " << parent.name << std::endl;
+	// // if (parent.children.size() >= 1) // start chain
+	// // {
+	// // 	ci::gl::pushModelMatrix();
+	// // 	ci::gl::multModelMatrix( parent.pose );
+		
+	// // 	if (parent.visible)
+	// // 	{
+	// // 		if (shadow)
+	// // 			parent.shadowedBatch->draw();
+	// // 		else
+	// // 			parent.mainBatch->draw();
+	// // 	}
+
+	// // 	// ci::gl::popModelMatrix();
+
+	// // 	for (Link child : parent.children)
+	// // 	{
+	// // 		// ci::gl::pushModelMatrix();
+	// // 		// ci::gl::multModelMatrix( parent.pose );
+	// // 		// std::cout << "child name: " << child.name << std::endl;
+	// // 		drawSerialChainPart(child, shadow);
+	// // 		// ci::gl::popModelMatrix();
+	// // 	}
+	// // 	ci::gl::popModelMatrix();
+	// }
+	// else if (parent.children.size() == 1)
+	// {
+	// 	ci::gl::pushModelMatrix();
+	// 	ci::gl::multModelMatrix( parent.pose );
+		
+	// 	if (parent.visible)
+	// 	{
+	// 		if (shadow)
+	// 			parent.shadowedBatch->draw();
+	// 		else
+	// 			parent.mainBatch->draw();
+	// 	}
+
+	// 	ci::gl::popModelMatrix();
+
+	// 	drawSerialChainPart(parent.children[0], shadow);
+	// }
 }
 
+// void Scene::drawParallelChainPart(Link &parent, bool shadow)
+// {
+	
+// }
+
+void Scene::drawSerialChainPart(Link &parent, bool shadow)
+{
+	ci::gl::color( parent.pColor );
+    ci::gl::multModelMatrix( parent.pose );
+
+	if (parent.visible)
+	{
+		if (shadow)
+			parent.shadowedBatch->draw();
+		else
+			parent.mainBatch->draw();
+	}
+	if (parent.children.size() != 0)
+	{
+		drawSerialChainPart(parent.children[0], shadow);
+	}
+	// if (parent.children.size() > 1)  // start new parallel chain
+	// {
+	// 	return 0;
+	// }
+	// else if (parent.children.size() == 0) // no more parts to draw
+	// {
+	// 	return 1;
+	// }
+	// else {
+	// 	drawSerialChainPart(parent.children[0], shadow);
+	// }
+}
 
 void Scene::drawFloor()
 {
@@ -174,9 +265,20 @@ Part::Part()
 
 void Part::setPartPose(float tx, float ty, float tz, float rotx, float roty, float rotz, float scale)
 {
-    partPose = glm::translate ( ci::vec3 ( tx, ty, tz ) )
+    partPose=  glm::translate ( ci::vec3 ( tx, ty, tz ) )
              * glm::toMat4 ( glm::angleAxis( rotx, ci::vec3 ( 1, 0, 0 ) ) )
              * glm::toMat4 ( glm::angleAxis( roty, ci::vec3 ( 0, 1, 0 ) ) )
              * glm::toMat4 ( glm::angleAxis( rotz, ci::vec3 ( 0, 0, 1 ) ) )
              * glm::scale ( ci::vec3 ( scale, scale, scale ) );
+}
+
+
+ci::gl::GlslProgRef Scene::getPartShadow()
+{
+	return mGlslShadow;
+}
+
+ci::gl::Texture2dRef Scene::getShadowMapTex()
+{
+	return mShadowMapTex;
 }

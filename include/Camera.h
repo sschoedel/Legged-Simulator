@@ -8,10 +8,11 @@ class Cam
 {
     public:
         Cam() {};
-        void setup();
+        void setCam();
 	    ci::CameraPersp	mCam;
+	    ci::CameraUi	mCamUi;
         
-        float cameraDistance =1500;
+        float cameraDistance = 400;
         float cameraTheta = 1.041;
         float cameraPhi = 0.940;
         float yOff = 0;

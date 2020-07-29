@@ -1,6 +1,5 @@
 #include "Robot.h"
 
-
 void Robot::setup(ci::gl::GlslProgRef mGlslShadow)
 {
 	// TODO: extract all of this information from a URDF or similar definition file
@@ -10,12 +9,11 @@ void Robot::setup(ci::gl::GlslProgRef mGlslShadow)
 	rootConfig.mountingPoints.push_back(std::make_pair(rootConfig.mtPt3, rootConfig.mtDir3));
 	rootConfig.mountingPoints.push_back(std::make_pair(rootConfig.mtPt4, rootConfig.mtDir4));
 	rootConfig.mountingPoints.push_back(std::make_pair(rootConfig.mtPt2, rootConfig.mtDir2));
-	ci::gl::BatchRef	mainBatchroot       = ci::gl::Batch::create(rootConfig.rootShape, mGlslShadow);
-	ci::gl::BatchRef	shadowedBatchroot   = ci::gl::Batch::create(rootConfig.rootShape, ci::gl::getStockShader(ci::gl::ShaderDef()));
-	root.setup(true, rootConfig.rootMass, "root", mainBatchroot, shadowedBatchroot, rootConfig.size, rootConfig.mountingPoints, -1, -1); // -1 because root doesn't have parent links
+	body.setup(true, rootConfig.rootMass, "root", rootConfig.rootShape, mGlslShadow, rootConfig.size, rootConfig.mountingPoints, -1, -1); // -1 because root doesn't have parent links
 	// set initial position and rotation for body
-	root.centerPos = rootConfig.initialrootPos;
-	root.centerRot = rootConfig.initialrootRot;
+	body.centerPos = rootConfig.initialrootPos;
+	body.centerRot = rootConfig.initialrootRot;
+	body.pColor    = rootConfig.rootColor;
 
 
 	// TODO: Left and right sides of shoulders and legs will be different
@@ -26,60 +24,173 @@ void Robot::setup(ci::gl::GlslProgRef mGlslShadow)
 	int BRS_parentMountIndex = 3;
 	shoulderConfig.mountingPoints.push_back(std::make_pair(shoulderConfig.mtPt1, shoulderConfig.mtDir1));
 	shoulderConfig.mountingPoints.push_back(std::make_pair(shoulderConfig.mtPt2, shoulderConfig.mtDir2));
-	ci::gl::BatchRef mainBatchShoulder = ci::gl::Batch::create(shoulderConfig.shoulderShape, mGlslShadow);
-	ci::gl::BatchRef shadowedBatchShoulder = ci::gl::Batch::create(shoulderConfig.shoulderShape, ci::gl::getStockShader(ci::gl::ShaderDef()));
-	FLS.setup(false, shoulderConfig.mass, "FLS", mainBatchShoulder, shadowedBatchShoulder, shoulderConfig.size, shoulderConfig.mountingPoints, shoulderConfig.thisMountIndex, FLS_parentMountIndex);
-	FRS.setup(false, shoulderConfig.mass, "FRS", mainBatchShoulder, shadowedBatchShoulder, shoulderConfig.size, shoulderConfig.mountingPoints, shoulderConfig.thisMountIndex, FRS_parentMountIndex);
-	BLS.setup(false, shoulderConfig.mass, "BLS", mainBatchShoulder, shadowedBatchShoulder, shoulderConfig.size, shoulderConfig.mountingPoints, shoulderConfig.thisMountIndex, BLS_parentMountIndex);
-	BRS.setup(false, shoulderConfig.mass, "BRS", mainBatchShoulder, shadowedBatchShoulder, shoulderConfig.size, shoulderConfig.mountingPoints, shoulderConfig.thisMountIndex, BRS_parentMountIndex);
+	FLS.setup(false, shoulderConfig.mass, "FLS", shoulderConfig.shoulderShape, mGlslShadow, shoulderConfig.size, shoulderConfig.mountingPoints, shoulderConfig.thisMountIndex, FLS_parentMountIndex);
+	FRS.setup(false, shoulderConfig.mass, "FRS", shoulderConfig.shoulderShape, mGlslShadow, shoulderConfig.size, shoulderConfig.mountingPoints, shoulderConfig.thisMountIndex, FRS_parentMountIndex);
+	BLS.setup(false, shoulderConfig.mass, "BLS", shoulderConfig.shoulderShape, mGlslShadow, shoulderConfig.size, shoulderConfig.mountingPoints, shoulderConfig.thisMountIndex, BLS_parentMountIndex);
+	BRS.setup(false, shoulderConfig.mass, "BRS", shoulderConfig.shoulderShape, mGlslShadow, shoulderConfig.size, shoulderConfig.mountingPoints, shoulderConfig.thisMountIndex, BRS_parentMountIndex);
+
+	FLS.pColor = shoulderConfig.color;
+	FRS.pColor = shoulderConfig.color;
+	BLS.pColor = shoulderConfig.color;
+	BRS.pColor = shoulderConfig.color;
+	FLS.jointAngle = shoulderConfig.initialJointAngle;
+	FRS.jointAngle = shoulderConfig.initialJointAngle;
+	BLS.jointAngle = shoulderConfig.initialJointAngle;
+	BRS.jointAngle = shoulderConfig.initialJointAngle;
 
 	// front left leg upper
 	upperLegConfig.mountingPoints.push_back(std::make_pair(upperLegConfig.mtPt1, upperLegConfig.mtDir1));
 	upperLegConfig.mountingPoints.push_back(std::make_pair(upperLegConfig.mtPt2, upperLegConfig.mtDir2));
-	ci::gl::BatchRef mainBatchUpperLeg = ci::gl::Batch::create(upperLegConfig.upperLegShape, mGlslShadow);
-	ci::gl::BatchRef shadowedBatchUpperLeg = ci::gl::Batch::create(upperLegConfig.upperLegShape, ci::gl::getStockShader(ci::gl::ShaderDef()));
-	FLU.setup(false, upperLegConfig.mass, "FLU", mainBatchUpperLeg, shadowedBatchUpperLeg, upperLegConfig.size, upperLegConfig.mountingPoints, upperLegConfig.thisMountIndex, upperLegConfig.parentMountIndex);
-	FRU.setup(false, upperLegConfig.mass, "FRU", mainBatchUpperLeg, shadowedBatchUpperLeg, upperLegConfig.size, upperLegConfig.mountingPoints, upperLegConfig.thisMountIndex, upperLegConfig.parentMountIndex);
-	BLU.setup(false, upperLegConfig.mass, "BLU", mainBatchUpperLeg, shadowedBatchUpperLeg, upperLegConfig.size, upperLegConfig.mountingPoints, upperLegConfig.thisMountIndex, upperLegConfig.parentMountIndex);
-	BRU.setup(false, upperLegConfig.mass, "BRU", mainBatchUpperLeg, shadowedBatchUpperLeg, upperLegConfig.size, upperLegConfig.mountingPoints, upperLegConfig.thisMountIndex, upperLegConfig.parentMountIndex);
+	FLU.setup(false, upperLegConfig.mass, "FLU", upperLegConfig.upperLegShape, mGlslShadow, upperLegConfig.size, upperLegConfig.mountingPoints, upperLegConfig.thisMountIndex, upperLegConfig.parentMountIndex);
+	FRU.setup(false, upperLegConfig.mass, "FRU", upperLegConfig.upperLegShape, mGlslShadow, upperLegConfig.size, upperLegConfig.mountingPoints, upperLegConfig.thisMountIndex, upperLegConfig.parentMountIndex);
+	BLU.setup(false, upperLegConfig.mass, "BLU", upperLegConfig.upperLegShape, mGlslShadow, upperLegConfig.size, upperLegConfig.mountingPoints, upperLegConfig.thisMountIndex, upperLegConfig.parentMountIndex);
+	BRU.setup(false, upperLegConfig.mass, "BRU", upperLegConfig.upperLegShape, mGlslShadow, upperLegConfig.size, upperLegConfig.mountingPoints, upperLegConfig.thisMountIndex, upperLegConfig.parentMountIndex);
+
+	FLU.pColor = upperLegConfig.color;
+	FRU.pColor = upperLegConfig.color;
+	BLU.pColor = upperLegConfig.color;
+	BRU.pColor = upperLegConfig.color;
+	FLU.jointAngle = upperLegConfig.initialJointAngle;
+	FRU.jointAngle = upperLegConfig.initialJointAngle;
+	BLU.jointAngle = upperLegConfig.initialJointAngle;
+	BRU.jointAngle = upperLegConfig.initialJointAngle;
 
 	// front left leg lower
 	lowerLegConfig.mountingPoints.push_back(std::make_pair(lowerLegConfig.mtPt1, lowerLegConfig.mtDir1));
 	lowerLegConfig.mountingPoints.push_back(std::make_pair(lowerLegConfig.mtPt2, lowerLegConfig.mtDir2));
-	ci::gl::BatchRef mainBatchLowerLeg = ci::gl::Batch::create(lowerLegConfig.lowerLegShape, mGlslShadow);
-	ci::gl::BatchRef shadowedBatchLowerLeg = ci::gl::Batch::create(lowerLegConfig.lowerLegShape, ci::gl::getStockShader(ci::gl::ShaderDef()));
-	FLL.setup(false, lowerLegConfig.mass, "FLL", mainBatchLowerLeg, shadowedBatchLowerLeg, lowerLegConfig.size, lowerLegConfig.mountingPoints, lowerLegConfig.thisMountIndex, lowerLegConfig.parentMountIndex);
-	FRL.setup(false, lowerLegConfig.mass, "FRL", mainBatchLowerLeg, shadowedBatchLowerLeg, lowerLegConfig.size, lowerLegConfig.mountingPoints, lowerLegConfig.thisMountIndex, lowerLegConfig.parentMountIndex);
-	BLL.setup(false, lowerLegConfig.mass, "BLL", mainBatchLowerLeg, shadowedBatchLowerLeg, lowerLegConfig.size, lowerLegConfig.mountingPoints, lowerLegConfig.thisMountIndex, lowerLegConfig.parentMountIndex);
-	BRL.setup(false, lowerLegConfig.mass, "BRL", mainBatchLowerLeg, shadowedBatchLowerLeg, lowerLegConfig.size, lowerLegConfig.mountingPoints, lowerLegConfig.thisMountIndex, lowerLegConfig.parentMountIndex);
+	FLL.setup(false, lowerLegConfig.mass, "FLL", lowerLegConfig.lowerLegShape, mGlslShadow, lowerLegConfig.size, lowerLegConfig.mountingPoints, lowerLegConfig.thisMountIndex, lowerLegConfig.parentMountIndex);
+	FRL.setup(false, lowerLegConfig.mass, "FRL", lowerLegConfig.lowerLegShape, mGlslShadow, lowerLegConfig.size, lowerLegConfig.mountingPoints, lowerLegConfig.thisMountIndex, lowerLegConfig.parentMountIndex);
+	BLL.setup(false, lowerLegConfig.mass, "BLL", lowerLegConfig.lowerLegShape, mGlslShadow, lowerLegConfig.size, lowerLegConfig.mountingPoints, lowerLegConfig.thisMountIndex, lowerLegConfig.parentMountIndex);
+	BRL.setup(false, lowerLegConfig.mass, "BRL", lowerLegConfig.lowerLegShape, mGlslShadow, lowerLegConfig.size, lowerLegConfig.mountingPoints, lowerLegConfig.thisMountIndex, lowerLegConfig.parentMountIndex);
 
-	root.addChild(FLS);
-	FLS.addChild(FLU);
-	FLU.addChild(FLL);
+	FLL.pColor = lowerLegConfig.color;
+	FRL.pColor = lowerLegConfig.color;
+	BLL.pColor = lowerLegConfig.color;
+	BRL.pColor = lowerLegConfig.color;
+	FLL.jointAngle = lowerLegConfig.initialJointAngle;
+	FRL.jointAngle = lowerLegConfig.initialJointAngle;
+	BLL.jointAngle = lowerLegConfig.initialJointAngle;
+	BRL.jointAngle = lowerLegConfig.initialJointAngle;
 
-	root.addChild(FRS);
-	FRS.addChild(FRU);
-	FRU.addChild(FRL);
+	// setChildren();
+	
+	// FLL.setPoseOffset();
+	// FRL.setPoseOffset();
+	// BLL.setPoseOffset();
+	// BRL.setPoseOffset();
+	// FLL.setPoseOffset();
+	// FRL.setPoseOffset();
+	// BLL.setPoseOffset();
+	// BRL.setPoseOffset();
 
-	root.addChild(BLS);
-	BLS.addChild(BLU);
-	BLU.addChild(BLL);
-
-	root.addChild(BRS);
-	BRS.addChild(BRU);
-	BRU.addChild(BRL);
 }
 
+void Robot::setChildren()
+{
+	clearFamily(body);
+	// clearFamily(FLS);
 
-// void Root::setup(float _mass, std::string _name, ci::gl::BatchRef _mainBatch, ci::gl::BatchRef _shadowedBatch, ci::vec3 _pos, ci::vec3 _rot, ci::vec3 _size, std::vector<std::pair<ci::vec3, ci::vec3>> _mountingPoints)
-// {
-// 	visible = true;
-// 	mass = _mass;
-// 	name = _name;
-// 	mainBatch = _mainBatch;
-// 	shadowedBatch = _shadowedBatch;
-// 	pos = _pos;
-// 	rot = _rot;
-// 	size = _size;
-// 	mountingPoints = _mountingPoints;
-// }
+	// FLU.addChild(FLL);
+	// FLS.addChild(FLU);
+	body.addChild(FLS);
+	// FLL.addParent(FLU);
+	// FLU.addParent(FLS);
+	FLS.addParent(body);
+	fprintf(stderr, "body child size: %d\n", FLS.parents.size());
+	fprintf(stderr, "child names for FLS: \n");
+	for (Link parent : body.children)
+	{
+		std::cout << "child name: " << parent.name << std::endl;
+	}
+
+	fprintf(stderr, "FLS parent size: %d\n", FLS.parents.size());
+	fprintf(stderr, "parent names for FLS: \n");
+	for (Link parent : FLS.parents)
+	{
+		std::cout << "parent name: " << parent.name << std::endl;
+	}
+	// FRU.addChild(FRL);
+	// FRS.addChild(FRU);
+	// body.addChild(FRS);
+
+	// BLU.addChild(BLL);
+	// BLS.addChild(BLU);
+	// body.addChild(BLS);
+
+	// BRU.addChild(BRL);
+	// BRS.addChild(BRU);
+	// body.addChild(BRS);
+}
+
+void Robot::clearFamily(Link &parent)
+{
+	if (parent.children.size() == 1)
+		clearFamily(parent.children[0]);
+	parent.clearChildren();
+	parent.clearParents();
+	// fprintf(stderr, "\nchildren size: %d, parents size: %d", parent.children.size(), parent.parents.size());
+	// for (Link child : parent.children)
+	// 	clearFamily(child);
+	// std::cout << "name before: " << parent.name << std::endl;
+	// for (int i=0;i<parent.children.size();i++)
+	// 	clearFamily(parent.children[i]);
+	// std::cout << "name after: " << parent.name << std::endl;
+	// fprintf(stderr, "parents size before clearing: %d\n", parent.parents.size());
+	// fprintf(stderr, "children size before clearing: %d\n", parent.parents.size());
+	// // parent.parents.clear();
+	// // parent.children.clear();
+	// parent.clearChildren();
+	// parent.clearParents();
+	// fprintf(stderr, "parents size after clearing: %d\n", parent.parents.size());
+	// fprintf(stderr, "parents size after clearing: %d\n", parent.parents.size());
+}
+
+void Robot::calcPoses(Link &parent)
+{
+	float tx = parent.centerPos.x;
+	float ty = parent.centerPos.y;
+	float tz = parent.centerPos.z;
+	float rotx = parent.centerRot.x;
+	float roty = parent.centerRot.y;
+	float rotz = parent.centerRot.z;
+	parent.pose = calcPartPose(tx, ty, tz, rotx, roty, rotz, 1);
+	for (int i=0;i<parent.children.size();i++)
+		calcPoses(parent.children[i]);
+}
+
+glm::mat4 Robot::calcPartPose(float tx, float ty, float tz, float rotx, float roty, float rotz, float scale)
+{
+    return (   glm::translate ( ci::vec3 ( tx, ty, tz ) )
+             * glm::toMat4 ( glm::angleAxis( rotx, ci::vec3 ( 1, 0, 0 ) ) )
+             * glm::toMat4 ( glm::angleAxis( roty, ci::vec3 ( 0, 1, 0 ) ) )
+             * glm::toMat4 ( glm::angleAxis( rotz, ci::vec3 ( 0, 0, 1 ) ) )
+             * glm::scale ( ci::vec3 ( scale, scale, scale ) )
+	);
+}
+
+void Robot::visualization()
+{
+	if ( showMtPtLines || showMtPtAxes || showJointAxes || showFullRotation || showMotorTorques )
+	{
+		ci::gl::pushModelMatrix();
+		std::vector<glm::mat4> prevPoses;
+		visualizePartVars(body, prevPoses);
+		ci::gl::popModelMatrix();
+	}
+}
+
+void Robot::visualizePartVars(Link &parent, std::vector<glm::mat4> prevPoses)
+{
+	ci::gl::multModelMatrix(parent.pose);
+
+	if (showMtPtLines)    { parent.drawMountingPtLines(); }
+	if (showMtPtAxes)     { parent.drawMountingPtAxes(); }
+	if (showJointAxes)    { parent.drawJointGeomCenterAxes(); }
+	if (showFullRotation) { parent.drawMotorRotationBounds(); }
+	if (showMotorTorques) { parent.drawMotorCommandedTorques(); }
+	
+	for (Link child : parent.children)
+		visualizePartVars(child, prevPoses);
+	// for (int i=0;i<parent.children.size();i++)
+	// 	visualizePartVars(parent.children[i], prevPoses);
+}

@@ -12,7 +12,7 @@ class Gui
         Gui();
         void updateRobotControl(Robot &robot);
         void updateRobotConfig(Robot &robot);
-        void updateScene(Scene &scene);
+        void updateScene(Scene &scene, Robot &bot);
         void updateCameraGUI(Cam &camera);
         void updateCamera(Cam &camera);
 };

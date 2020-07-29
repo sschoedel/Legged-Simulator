@@ -30,7 +30,7 @@ public:
     void draw() override;
 
 private:
-	Robot					bot;
+	Robot					bot;// = Robot::create();
 	Gui 					gui;
 	Scene					scene;
 
