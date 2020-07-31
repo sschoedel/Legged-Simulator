@@ -6,38 +6,56 @@
 #include "Mesh.h"
 
 #include "robot_description/configs/root_config.h"
-#include "robot_description/configs/upper_leg_config.h"
-#include "robot_description/configs/lower_leg_config.h"
-#include "robot_description/configs/shoulder_config.h"
+#include "robot_description/configs/shoulder_config_front_left.h"
+#include "robot_description/configs/shoulder_config_front_right.h"
+#include "robot_description/configs/shoulder_config_back_left.h"
+#include "robot_description/configs/shoulder_config_back_right.h"
+#include "robot_description/configs/upper_leg_config_left.h"
+#include "robot_description/configs/lower_leg_config_left.h"
+#include "robot_description/configs/upper_leg_config_right.h"
+#include "robot_description/configs/lower_leg_config_right.h"
 
 class Robot
 {
-    public:
+    public: 
         Robot() {};
         void setup(ci::gl::GlslProgRef mGlslShadow);
-        void calcPoses(Link &parent);
+        void calcPoses(LinkRef &parent);
         void visualization();
-        void clearFamily(Link &root);
+        void clearFamily(LinkRef &root);
         void setChildren();
-        void visualizePartVars(Link &parent, std::vector<glm::mat4> prevPoses);
+        void visualizePartVars(LinkRef &parent, std::vector<glm::mat4> prevPoses);
         
         glm::mat4 calcPartPose(float tx, float ty, float tz, float rotx, float roty, float rotz, float scale);
 
         // specific to each robot
         RootConfig rootConfig;
-        ShoulderConfig shoulderConfig;
-        UpperLegConfig upperLegConfig;
-        LowerLegConfig lowerLegConfig;
+        FrontLeftShoulderConfig frontLeftShoulderConfig;
+        BackLeftShoulderConfig backLeftShoulderConfig;
+        FrontRightShoulderConfig frontRightShoulderConfig;
+        BackRightShoulderConfig backRightShoulderConfig;
+        LeftLowerLegConfig leftLowerLegConfig;
+        LeftUpperLegConfig leftUpperLegConfig;
+        RightLowerLegConfig rightLowerLegConfig;
+        RightUpperLegConfig rightUpperLegConfig;
 
-        Link body;
-        Link FLS, FLU, FLL;
-        Link FRS, FRU, FRL;
-        Link BLS, BLU, BLL;
-        Link BRS, BRU, BRL;
+        LinkRef body = Link::create();
+        LinkRef FLS  = Link::create();
+        LinkRef FLU  = Link::create();
+        LinkRef FLL  = Link::create();
+        LinkRef FRS  = Link::create();
+        LinkRef FRU  = Link::create();
+        LinkRef FRL  = Link::create();
+        LinkRef BLS  = Link::create();
+        LinkRef BLU  = Link::create();
+        LinkRef BLL  = Link::create();
+        LinkRef BRS  = Link::create();
+        LinkRef BRU  = Link::create();
+        LinkRef BRL  = Link::create();
 
         bool showMtPtLines;
         bool showMtPtAxes;
-        bool showJointAxes;
+        bool showLinkAxes;
         bool showFullRotation;
         bool showMotorTorques;
 };

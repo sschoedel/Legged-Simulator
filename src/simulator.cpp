@@ -27,7 +27,7 @@ void SimulationApp::update()
     gui.updateRobotConfig(bot);
 
 	// scene.setPart(bot.body);
-	bot.setChildren();
+	// bot.setChildren();
 	bot.calcPoses(bot.body);
 	// bot.calcPoses(bot.body.children[0]);
 }

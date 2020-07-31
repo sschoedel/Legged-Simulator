@@ -1,60 +1,151 @@
 #include "robot_description/Link.h"
 
-
-void Link::setup(bool _isRoot, float _mass, std::string _name, const ci::geom::Source &shape, ci::gl::GlslProgRef mGlslShadow, ci::vec3 _size, std::vector<std::pair<ci::vec3, ci::vec3>> _mountingPoints, int _thisMountIndex, int _parentMountIndex)
+LinkRef Link::create()
 {
-	shadowedBatch    = ci::gl::Batch::create(shape, mGlslShadow);
-	mainBatch        = ci::gl::Batch::create(shape, ci::gl::getStockShader(ci::gl::ShaderDef()));
-	visible          = true;
-    isRoot           = _isRoot;
-	name             = _name;
-	mass             = _mass;
-	size             = _size;
-	mountingPoints   = _mountingPoints;
-	thisMountIndex   = _thisMountIndex;
-	parentMountIndex = _parentMountIndex;
-	parentIndex		 = 0; // Each link only supports one parent for now
-
+	LinkRef ref = std::make_shared<Link>();
+	return ref;
 }
 
-void Link::setPoseOffset()
+void Link::setup(bool _isRoot, float _mass, std::string _name, const ci::geom::Source &shape, ci::gl::GlslProgRef mGlslShadow, ci::vec3 _size, std::vector<std::pair<ci::vec3, ci::vec3>> _mountingPoints, 
+					int _thisMountIndex, int _parentMountIndex, ci::Color _pColor, float _initialJointAngle, int _rotationDirection, int _rotationAxis)
+{
+	shadowedBatch    	= ci::gl::Batch::create(shape, mGlslShadow);
+	mainBatch        	= ci::gl::Batch::create(shape, ci::gl::getStockShader(ci::gl::ShaderDef()));
+	visible          	= true;
+    isRoot           	= _isRoot;
+	name             	= _name;
+	mass             	= _mass;
+	size             	= _size;
+	mountingPoints   	= _mountingPoints;
+	thisMountIndex   	= _thisMountIndex;
+	parentMountIndex 	= _parentMountIndex;
+	parentIndex		 	= 0; // Each link only supports one parent for now
+	pColor			 	= _pColor;
+	initialJointAngle 	= _initialJointAngle;
+	rotationDirection	= _rotationDirection;
+	rotationAxis		= _rotationAxis;
+}
+
+void Link::setPoses()
 {
 	if (!isRoot)
 	{
-		fprintf(stderr, "\nnum parents: %d", static_cast<int>(parents.size()));
-		// poseTransOffset = mountingPoints[thisMountIndex].first - parents[parentIndex].mountingPoints[parentMountIndex].first;
-		// ci::vec3 thisRot = mountingPoints[thisMountIndex].second;
-		// ci::vec3 parentRot = parents[parentIndex].mountingPoints[parentMountIndex].second;
+		if (static_cast<int>(parents.size()) > parentIndex)
+		{
+			fprintf(stderr, "\nSetting joint pose for joint "); std::cout << name << std::endl;
 
-		// // vector projection of a onto b: a_1 = dot( a, b ) * b / pow( normalize(b), 2 )
-		// ci::vec3 x_axis(1,0,0);
-		// ci::vec3 y_axis(0,1,0);
-		// ci::vec3 z_axis(0,0,1);
+			updateTotalJointAngle();
 
-		// float thisRot_zy = sqrt( pow(thisRot.z, 2) + pow(thisRot.y, 2) );
-		// float thisRot_xz = sqrt( pow(thisRot.x, 2) + pow(thisRot.z, 2) );
-		// float thisRot_yx = sqrt( pow(thisRot.y, 2) + pow(thisRot.x, 2) );
-		// float parentRot_zy = sqrt( pow(parentRot.z, 2) + pow(parentRot.y, 2) );
-		// float parentRot_xz = sqrt( pow(parentRot.x, 2) + pow(parentRot.z, 2) );
-		// float parentRot_yx = sqrt( pow(parentRot.y, 2) + pow(parentRot.x, 2) );
+			jointPoseTrans     = parents[parentIndex]->mountingPoints[parentMountIndex].first;
+			ci::vec3 thisRotAxis   = mountingPoints[thisMountIndex].second;
+			parentRotAxis = normalize( parents[parentIndex]->mountingPoints[parentMountIndex].second );
 
-		// float poseRotOffsetx = acos( ci::dot( thisRot_zy, parentRot_zy ) );
-		// float poseRotOffsety = acos( ci::dot( thisRot_xz, parentRot_xz ) );
-		// float poseRotOffsetz = acos( ci::dot( thisRot_yx, parentRot_yx ) );
+			// ci::vec3 x_axis(1,0,0);
+			// ci::vec3 y_axis(0,1,0);
+			// ci::vec3 z_axis(0,0,1);
 
-		// poseOffset = glm::translate ( poseTransOffset )
-		// 		   * glm::toMat4 ( glm::angleAxis( poseRotOffsetx, ci::vec3 ( 1, 0, 0 ) ) )
-		// 		   * glm::toMat4 ( glm::angleAxis( poseRotOffsety, ci::vec3 ( 0, 1, 0 ) ) )
-		// 		   * glm::toMat4 ( glm::angleAxis( poseRotOffsetz, ci::vec3 ( 0, 0, 1 ) ) );
+			// ci::vec2 thisRot_zy(thisRot.z, thisRot.y);
+			// ci::vec2 thisRot_xz(thisRot.x, thisRot.z);
+			// ci::vec2 thisRot_yx(thisRot.y, thisRot.x);
+			// ci::vec2 parentRot_zy(parentRot.z, parentRot.y);
+			// ci::vec2 parentRot_xz(parentRot.x, parentRot.z);
+			// ci::vec2 parentRot_yx(parentRot.y, parentRot.x);
+
+			// jointPoseRot.x = acos( ci::dot( thisRot_zy, parentRot_zy ) );
+			// jointPoseRot.y = acos( ci::dot( thisRot_xz, parentRot_xz ) );
+			// jointPoseRot.z = acos( ci::dot( thisRot_yx, parentRot_yx ) );
+
+			// if (rotationAxis == 0)
+			// {
+			// 	jointPose  = glm::translate ( jointPoseTrans )
+			// 			   * glm::toMat4 ( glm::angleAxis( rotationDirection * (zeroJointAngle + initialJointAngle), ci::vec3 ( 1, 0, 0 ) ) )
+			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.y, ci::vec3 ( 0, 1, 0 ) ) )
+			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.z, ci::vec3 ( 0, 0, 1 ) ) );
+			// }
+			// else if (rotationAxis == 1)
+			// {
+			// 	jointPose  = glm::translate ( jointPoseTrans )
+			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.x, ci::vec3 ( 1, 0, 0 ) ) )
+			// 			   * glm::toMat4 ( glm::angleAxis( rotationDirection * (zeroJointAngle + initialJointAngle), ci::vec3 ( 0, 1, 0 ) ) )
+			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.z, ci::vec3 ( 0, 0, 1 ) ) );
+			// }
+			// else if (rotationAxis == 2)
+			// {
+			// 	jointPose  = glm::translate ( jointPoseTrans )
+			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.x, ci::vec3 ( 1, 0, 0 ) ) )
+			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.y, ci::vec3 ( 0, 1, 0 ) ) )
+			// 			   * glm::toMat4 ( glm::angleAxis( rotationDirection * (zeroJointAngle + initialJointAngle), ci::vec3 ( 0, 0, 1 ) ) );
+			// }
+
+			// always align the z-axis of next joint to mountingPoint of previous link using axis alignment
+
+
+			alignmentAngle = acos( dot(thisRotAxis, parentRotAxis) );
+			alignmentAxis = normalize( cross(thisRotAxis, parentRotAxis) );
+			fprintf(stderr, "\nalignmentaxis: %f, %f, %f", alignmentAxis.x, alignmentAxis.y, alignmentAxis.z);
+			fprintf(stderr, "\nalignmentangle: %f",alignmentAngle);
+
+			jointPose = glm::translate( jointPoseTrans )
+					  * glm::toMat4( glm::angleAxis( alignmentAngle, alignmentAxis ) )
+			   		  * glm::toMat4( glm::angleAxis( totalJointAngle, parentRotAxis ) );
+		}
+		else
+		{
+			fprintf(stderr, "\nWARN: Fewer parents than parent index, can't set joint or link poses");
+		}
+
+		fprintf(stderr, "\nSetting link pose for link "); std::cout << name << std::endl;
+		// TODO: change offset for left and right legs (should make config files for each side instead of doing it in link.cpp)
+
+		// set once (unless linear actuator, then arm needs to extend and this would be updated accordingly)
+		linkPoseTrans.x = size.x/2;
+		linkPoseTrans.y = 0;
+		linkPoseTrans.z = 0;
+		linkPose        = glm::translate ( linkPoseTrans );
 	}
+
 }
 
-void Link::addChild(Link link)
+void Link::updateJointPose()
+{
+	updateTotalJointAngle();
+	// if (rotationAxis == 0)
+	// {
+	// 	jointPose  = glm::translate ( jointPoseTrans )
+	// 			* glm::toMat4 ( glm::angleAxis( rotationDirection * totalJointAngle, ci::vec3 ( 1, 0, 0 ) ) )
+	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.y, ci::vec3 ( 0, 1, 0 ) ) )
+	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.z, ci::vec3 ( 0, 0, 1 ) ) );
+	// }
+	// else if (rotationAxis == 1)
+	// {
+	// 	jointPose  = glm::translate ( jointPoseTrans )
+	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.x, ci::vec3 ( 1, 0, 0 ) ) )
+	// 			* glm::toMat4 ( glm::angleAxis( rotationDirection * totalJointAngle, ci::vec3 ( 0, 1, 0 ) ) )
+	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.z, ci::vec3 ( 0, 0, 1 ) ) );
+	// }
+	// else if (rotationAxis == 2)
+	// {
+	// 	jointPose  = glm::translate ( jointPoseTrans )
+	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.x, ci::vec3 ( 1, 0, 0 ) ) )
+	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.y, ci::vec3 ( 0, 1, 0 ) ) )
+	// 			* glm::toMat4 ( glm::angleAxis( rotationDirection * totalJointAngle, ci::vec3 ( 0, 0, 1 ) ) );
+	// }
+	jointPose  = glm::translate ( jointPoseTrans )
+			   * glm::toMat4( glm::angleAxis( alignmentAngle, alignmentAxis ) )
+			   * glm::toMat4( glm::angleAxis( totalJointAngle, parentRotAxis ) );
+}
+
+void Link::updateTotalJointAngle()
+{
+	totalJointAngle = zeroJointAngle + initialJointAngle + jointAngle;
+}
+
+void Link::addChild(LinkRef &link)
 {
 	children.push_back(link);
 }
 
-void Link::addParent(Link link)
+void Link::addParent(LinkRef &link)
 {
 	parents.push_back(link);
 }

@@ -38,27 +38,27 @@ void Gui::updateScene(Scene &scene, Robot &bot)
 	if (ImGui::Button("Toggle Floor", ImVec2(200,30))) { scene.showFloor = !scene.showFloor; }
 	if (ImGui::Button("Toggle Mounting Point Lines", ImVec2(200,30))) { bot.showMtPtLines = !bot.showMtPtLines; }
 	if (ImGui::Button("Toggle Mounting Point Axes", ImVec2(200,30))) { bot.showMtPtAxes = !bot.showMtPtAxes; }
-	if (ImGui::Button("Toggle Joint Axes", ImVec2(200,30))) { bot.showJointAxes = !bot.showJointAxes; }
+	if (ImGui::Button("Toggle Joint Axes", ImVec2(200,30))) { bot.showLinkAxes = !bot.showLinkAxes; }
 	if (ImGui::Button("Toggle Motor Rotation Vis", ImVec2(200,30))) { bot.showFullRotation = !bot.showFullRotation; }
 	if (ImGui::Button("Toggle Motor Torque Vis", ImVec2(200,30))) { bot.showMotorTorques = !bot.showMotorTorques; }
 	
 	ImGui::MenuItem("Show links", nullptr, true);
-	if (ImGui::Button("Toggle body", ImVec2(200,30))) { bot.body.visible = !bot.body.visible; }
+	if (ImGui::Button("Toggle body", ImVec2(200,30))) { bot.body->visible = !bot.body->visible; }
 
-	if (ImGui::Button("Toggle FLS", ImVec2(200,30))) { bot.FLS.visible = !bot.FLS.visible; }
-	if (ImGui::Button("Toggle FRS", ImVec2(200,30))) { bot.FRS.visible = !bot.FRS.visible; }
-	if (ImGui::Button("Toggle BRS", ImVec2(200,30))) { bot.BLS.visible = !bot.BLS.visible; }
-	if (ImGui::Button("Toggle BRS", ImVec2(200,30))) { bot.BRS.visible = !bot.BRS.visible; }
+	if (ImGui::Button("Toggle FLS", ImVec2(200,30))) { bot.FLS->visible = !bot.FLS->visible; }
+	if (ImGui::Button("Toggle FRS", ImVec2(200,30))) { bot.FRS->visible = !bot.FRS->visible; }
+	if (ImGui::Button("Toggle BLS", ImVec2(200,30))) { bot.BLS->visible = !bot.BLS->visible; }
+	if (ImGui::Button("Toggle BRS", ImVec2(200,30))) { bot.BRS->visible = !bot.BRS->visible; }
 
-	if (ImGui::Button("Toggle FLU", ImVec2(200,30))) { bot.FLU.visible = !bot.FLU.visible; }
-	if (ImGui::Button("Toggle FRU", ImVec2(200,30))) { bot.FRU.visible = !bot.FRU.visible; }
-	if (ImGui::Button("Toggle BLU", ImVec2(200,30))) { bot.BLU.visible = !bot.BLU.visible; }
-	if (ImGui::Button("Toggle BRU", ImVec2(200,30))) { bot.BRU.visible = !bot.BRU.visible; }
+	if (ImGui::Button("Toggle FLU", ImVec2(200,30))) { bot.FLU->visible = !bot.FLU->visible; }
+	if (ImGui::Button("Toggle FRU", ImVec2(200,30))) { bot.FRU->visible = !bot.FRU->visible; }
+	if (ImGui::Button("Toggle BLU", ImVec2(200,30))) { bot.BLU->visible = !bot.BLU->visible; }
+	if (ImGui::Button("Toggle BRU", ImVec2(200,30))) { bot.BRU->visible = !bot.BRU->visible; }
 
-	if (ImGui::Button("Toggle FLL", ImVec2(200,30))) { bot.FLL.visible = !bot.FLL.visible; }
-	if (ImGui::Button("Toggle FRL", ImVec2(200,30))) { bot.FRL.visible = !bot.FRL.visible; }
-	if (ImGui::Button("Toggle BLL", ImVec2(200,30))) { bot.BLL.visible = !bot.BLL.visible; }
-	if (ImGui::Button("Toggle BRL", ImVec2(200,30))) { bot.BRL.visible = !bot.BRL.visible; }
+	if (ImGui::Button("Toggle FLL", ImVec2(200,30))) { bot.FLL->visible = !bot.FLL->visible; }
+	if (ImGui::Button("Toggle FRL", ImVec2(200,30))) { bot.FRL->visible = !bot.FRL->visible; }
+	if (ImGui::Button("Toggle BLL", ImVec2(200,30))) { bot.BLL->visible = !bot.BLL->visible; }
+	if (ImGui::Button("Toggle BRL", ImVec2(200,30))) { bot.BRL->visible = !bot.BRL->visible; }
 	ImGui::End();
 }
 
@@ -72,32 +72,39 @@ void Gui::updateRobotConfig(Robot &robot)
 	ImGui::SetNextWindowCollapsed( false, ImGuiCond_FirstUseEver );
 	ImGui::Begin( "Robot config" );
 	ImGui::MenuItem("Body Position", nullptr, true);
-	ImGui::DragFloat("centerPos x", &robot.body.centerPos.x, 1, -100, 200);
-	ImGui::DragFloat("centerPos y", &robot.body.centerPos.y, 1, -100, 200);
-	ImGui::DragFloat("centerPos z", &robot.body.centerPos.z, 1, -100, 200);
+	ImGui::DragFloat("jointPoseTransBODY x", &robot.body->jointPoseTrans.x, 1, -100, 200);
+	ImGui::DragFloat("jointPoseTransBODY y", &robot.body->jointPoseTrans.y, 1, -100, 200);
+	ImGui::DragFloat("jointPoseTransBODY z", &robot.body->jointPoseTrans.z, 1, -100, 200);
 	ImGui::MenuItem("Body Rotation", nullptr, true);
-	ImGui::DragFloat("centerRot x", &robot.body.centerRot.x, 0.01, 0.001, 1.501);
-	ImGui::DragFloat("centerRot y", &robot.body.centerRot.y, 0.01, 0.001, 1.501);
-	ImGui::DragFloat("centerRot z", &robot.body.centerRot.z, 0.01, 0.001, 1.501);
-	ImGui::MenuItem("Body Joint rotations", nullptr, true);
-	ImGui::DragFloat("FLS rotation", &robot.FLS.jointAngle, 0.01, -1.501, 1.501);
-	ImGui::DragFloat("FRS rotation", &robot.FRS.jointAngle, 0.01, -1.501, 1.501);
-	ImGui::DragFloat("BLS rotation", &robot.BLS.jointAngle, 0.01, -1.501, 1.501);
-	ImGui::DragFloat("BRS rotation", &robot.BRS.jointAngle, 0.01, -1.501, 1.501);
-	ImGui::Spacing();
+	ImGui::DragFloat("jointPoseRotBODY x", &robot.body->jointPoseRot.x, 0.01, 0.001, 1.501);
+	ImGui::DragFloat("jointPoseRotBODY y", &robot.body->jointPoseRot.y, 0.01, 0.001, 1.501);
+	ImGui::DragFloat("jointPoseRotBODY z", &robot.body->jointPoseRot.z, 0.01, 0.001, 1.501);
+	ImGui::MenuItem("Body Joint Rotations", nullptr, true);
+	ImGui::DragFloat("FLS jointAngle", &robot.FLS->jointAngle, 0.01, -1.501, 1.501*2);
+	ImGui::DragFloat("FRS jointAngle", &robot.FRS->jointAngle, 0.01, -1.501, 1.501*2);
+	ImGui::DragFloat("BLS jointAngle", &robot.BLS->jointAngle, 0.01, -1.501, 1.501*2);
+	ImGui::DragFloat("BRS jointAngle", &robot.BRS->jointAngle, 0.01, -1.501, 1.501*2);
+	ImGui::Separator();
 	// ImGui::ColorPickerOptionsPopup();
 	// ImGui::PlotLines();
-	ImGui::MenuItem("FLS Position", nullptr, true);
-	ImGui::DragFloat("centerPosFLS x", &robot.FLS.centerPos.x, 1, -100, 200);
-	ImGui::DragFloat("centerPosFLS y", &robot.FLS.centerPos.y, 1, -100, 200);
-	ImGui::DragFloat("centerPosFLS z", &robot.FLS.centerPos.z, 1, -100, 200);
-	ImGui::MenuItem("FLS Rotation", nullptr, true);
-	ImGui::DragFloat("centerRotFLS x", &robot.FLS.centerRot.x, 0.01, 0.001, 1.501);
-	ImGui::DragFloat("centerRotFLS y", &robot.FLS.centerRot.y, 0.01, 0.001, 1.501);
-	ImGui::DragFloat("centerRotFLS z", &robot.FLS.centerRot.z, 0.01, 0.001, 1.501);
-	// ImGui::MenuItem("Shins", nullptr, true);
-	// ImGui::DragFloat("Length Shins", &cameraTheta31, 0.01, 0.001, 1.501);
-	// ImGui::DragFloat("Width Shins", &cameraTheta32, 0.01, 0.001, 1.501);
-	// ImGui::DragFloat("Height Shins", &cameraTheta33, 0.01, 0.001, 1.501);
+	ImGui::MenuItem("Upper Leg Rotations", nullptr, true);
+	ImGui::DragFloat("FLU jointAngle", &robot.FLU->jointAngle, 0.01, -3.1415, 3.1415);
+	ImGui::DragFloat("FRU jointAngle", &robot.FRU->jointAngle, 0.01, -3.1415, 3.1415);
+	ImGui::DragFloat("BLU jointAngle", &robot.BLU->jointAngle, 0.01, -3.1415, 3.1415);
+	ImGui::DragFloat("BRU jointAngle", &robot.BRU->jointAngle, 0.01, -3.1415, 3.1415);
+	ImGui::Separator();
+	ImGui::MenuItem("Lower Leg Rotations", nullptr, true);
+	ImGui::DragFloat("FLL jointAngle", &robot.FLL->jointAngle, 0.01, -3.1415, 3.1415);
+	ImGui::DragFloat("FRL jointAngle", &robot.FRL->jointAngle, 0.01, -3.1415, 3.1415);
+	ImGui::DragFloat("BLL jointAngle", &robot.BLL->jointAngle, 0.01, -3.1415, 3.1415);
+	ImGui::DragFloat("BRL jointAngle", &robot.BRL->jointAngle, 0.01, -3.1415, 3.1415);
+	ImGui::Separator();
+	ImGui::Separator();
+	ImGui::Separator();
+	ImGui::Separator();
+	ImGui::MenuItem("FRL TESTS", nullptr, true);
+	ImGui::DragFloat("FRL x", &robot.FRL->jointPoseRot.x, 0.01, -3.1415, 3.1415);
+	ImGui::DragFloat("FRL y", &robot.FRL->jointPoseRot.y, 0.01, -3.1415, 3.1415);
+	ImGui::DragFloat("FRL z", &robot.FRL->jointPoseRot.z, 0.01, -3.1415, 3.1415);
 	ImGui::End();
 }

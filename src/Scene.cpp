@@ -61,7 +61,7 @@ void Scene::clearParts()
 	parts.erase(parts.begin(),parts.end());
 }
 
-// void Scene::setPart(Link &parent)
+// void Scene::setPart(LinkRef &parent)
 // {
 // 	Part newPart;
 // 	newPart.pColor = ci::Color(0.4f,0.8f,0.6f);
@@ -81,7 +81,7 @@ void Scene::clearParts()
 // 	// }
 // }
 
-void Scene::drawModelMain(Link &parent)
+void Scene::drawModelMain(LinkRef &parent)
 {
 	// Set polygon offset to battle shadow acne
 	ci::gl::enable( GL_POLYGON_OFFSET_FILL );
@@ -96,56 +96,77 @@ void Scene::drawModelMain(Link &parent)
     updateModelShadows();
 
     // Draw physical parts here
+	ci::gl::pushModelMatrix();
 	drawPart( parent, false );
+	ci::gl::popModelMatrix();
 	
 	// Disable polygon offset for final render
 	ci::gl::disable( GL_POLYGON_OFFSET_FILL );
 }
 
-void Scene::drawModelShadows(Link &parent)
+void Scene::drawModelShadows(LinkRef &parent)
 {
     // Set view to viewing camera angle
 	ci::gl::setMatrices( camera.mCam );
 	
     //Draw part shadows here
+	ci::gl::pushModelMatrix();
 	drawPart( parent, true);
+	ci::gl::popModelMatrix();
 }
 
-void Scene::drawPart(Link &parent, bool shadow)
+void Scene::drawPart(LinkRef &parent, bool shadow)
 {
-	ci::gl::color( parent.pColor );
 
-
-	//tmp for testing
-	ci::gl::pushModelMatrix();
-	ci::gl::multModelMatrix(parent.poseOffset);
-	ci::gl::multModelMatrix(parent.pose);
-
-	if (parent.visible)
+	ci::gl::color( parent->pColor );
+	ci::gl::multModelMatrix(parent->jointPose);
+	ci::gl::multModelMatrix(parent->linkPose);
+	
+	if (parent->visible)
 	{
 		if (shadow)
-			parent.shadowedBatch->draw();
+			parent->shadowedBatch->draw();
 		else
-			parent.mainBatch->draw();
+			parent->mainBatch->draw();
 	}
 
-	// TODO: figure out why this doesn't do anything
-	if (parent.children.size() == 1)
+	for (LinkRef child : parent->children)
 	{
-		ci::gl::color( parent.children[0].pColor );
-		ci::gl::multModelMatrix(parent.poseOffset);
-		ci::gl::multModelMatrix(parent.children[0].pose);
-
-		if (parent.children[0].visible)
-		{
-			if (shadow)
-				parent.children[0].shadowedBatch->draw();
-			else
-				parent.children[0].mainBatch->draw();
-		}
+		ci::gl::pushModelMatrix();
+		drawPart(child, shadow);
+		ci::gl::popModelMatrix();
 	}
 
-	ci::gl::popModelMatrix();
+	// //tmp for testing
+	// ci::gl::pushModelMatrix();
+	// ci::gl::multModelMatrix(parent->jointPose);
+	// ci::gl::multModelMatrix(parent->linkPose);
+	// if (parent->visible)
+	// {
+	// 	if (shadow)
+	// 		parent->shadowedBatch->draw();
+	// 	else
+	// 		parent->mainBatch->draw();
+	// }
+
+	// for (int i=0;i<parent->children.size();i++)
+	// {
+	// 	ci::gl::pushModelMatrix();
+	// 	ci::gl::color( parent->children[i]->pColor );
+	// 	ci::gl::multModelMatrix(parent->children[i]->jointPose);
+	// 	ci::gl::multModelMatrix(parent->children[i]->linkPose);
+	// 	if (parent->children[i]->visible)
+	// 	{
+	// 		if (shadow)
+	// 			parent->children[i]->shadowedBatch->draw();
+	// 		else
+	// 			parent->children[i]->mainBatch->draw();
+	// 	}
+	// 	ci::gl::popModelMatrix();
+	// }
+
+
+	// ci::gl::popModelMatrix();
 
 	// TODO: draw serial chains within the same pushModelMatrix (pushModelMatrix, Multmodelmatrix, drawlink1, multmodelmatrix, drawlink2, ..., popModelMatrix)
 	// this implementation only works for robots that have a body with only serial chains attached. Something that has parallel linkages after the body will not work.
@@ -197,38 +218,40 @@ void Scene::drawPart(Link &parent, bool shadow)
 	// }
 }
 
-// void Scene::drawParallelChainPart(Link &parent, bool shadow)
+// void Scene::drawParallelChainPart(LinkRef &parent, bool shadow)
 // {
 	
 // }
 
-void Scene::drawSerialChainPart(Link &parent, bool shadow)
+void Scene::drawSerialChainPart(LinkRef &parent, bool shadow)
 {
-	ci::gl::color( parent.pColor );
-    ci::gl::multModelMatrix( parent.pose );
 
-	if (parent.visible)
-	{
-		if (shadow)
-			parent.shadowedBatch->draw();
-		else
-			parent.mainBatch->draw();
-	}
-	if (parent.children.size() != 0)
-	{
-		drawSerialChainPart(parent.children[0], shadow);
-	}
-	// if (parent.children.size() > 1)  // start new parallel chain
+
+	// ci::gl::color( parent->pColor );
+    // ci::gl::multModelMatrix( parent->jointPose );
+
+	// if (parent->visible)
 	// {
-	// 	return 0;
+	// 	if (shadow)
+	// 		parent->shadowedBatch->draw();
+	// 	else
+	// 		parent->mainBatch->draw();
 	// }
-	// else if (parent.children.size() == 0) // no more parts to draw
+	// if (parent->children.size() != 0)
 	// {
-	// 	return 1;
+	// 	drawSerialChainPart(parent->children[0], shadow);
 	// }
-	// else {
-	// 	drawSerialChainPart(parent.children[0], shadow);
-	// }
+	// // if (parent.children.size() > 1)  // start new parallel chain
+	// // {
+	// // 	return 0;
+	// // }
+	// // else if (parent.children.size() == 0) // no more parts to draw
+	// // {
+	// // 	return 1;
+	// // }
+	// // else {
+	// // 	drawSerialChainPart(parent.children[0], shadow);
+	// // }
 }
 
 void Scene::drawFloor()

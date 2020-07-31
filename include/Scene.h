@@ -24,17 +24,17 @@ class Scene
         ci::gl::GlslProgRef getPartShadow();
         ci::gl::Texture2dRef getShadowMapTex();
 
-        void setPart(Link &parent);
+        void setPart(LinkRef &parent);
         void clearParts();
 
         void drawPart(ci::gl::BatchRef &batch, glm::mat4 partPose, ci::Color pColor);
         void drawPart(ci::gl::BatchRef &batch);
-        void drawPart(Link &parent, bool shadow);
-        void drawSerialChainPart(Link &parent, bool shadow);
+        void drawPart(LinkRef &parent, bool shadow);
+        void drawSerialChainPart(LinkRef &parent, bool shadow);
 
         void drawFloor();
-        void drawModelMain(Link &parent);
-        void drawModelShadows(Link &parent);
+        void drawModelMain(LinkRef &parent);
+        void drawModelShadows(LinkRef &parent);
         void drawModelMain();
         void drawModelShadows();
 

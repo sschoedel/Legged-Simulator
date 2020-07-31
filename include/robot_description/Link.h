@@ -16,17 +16,24 @@ typedef struct
     float current;
 } motorStats;
 
+class Link;
+typedef std::shared_ptr<Link> LinkRef;
+
 // Each link is assumed to have a motor attached directly to an axis of rotation
 class Link { 
     public:
+        static LinkRef create();
         Link() {};
-        void setup(bool _isRoot, float _mass, std::string _name, const ci::geom::Source &shape, ci::gl::GlslProgRef mGlslShadow, ci::vec3 _size, std::vector<std::pair<ci::vec3, ci::vec3>> _mountingPoints, int _thisMountIndex, int _parentMountIndex);
-        void setPoseOffset();
-        void addChild(Link link);
-        void addParent(Link link);
+        void setup(bool _isRoot, float _mass, std::string _name, const ci::geom::Source &shape, ci::gl::GlslProgRef mGlslShadow, ci::vec3 _size, std::vector<std::pair<ci::vec3, ci::vec3>> _mountingPoints, 
+                    int _thisMountIndex, int _parentMountIndex, ci::Color _pColor, float _jointAngle, int _rotationDirection, int _rotationAxis);
+        void setPoses();
+        void updateJointPose();
+        void addChild(LinkRef &link);
+        void addParent(LinkRef &link);
         void clearChildren();
         void clearParents();
         void assignBatches(const ci::geom::Source &shape, ci::gl::GlslProgRef mGlslShadow);
+        void updateTotalJointAngle();
 
         // link variable visualization
         void drawMountingPtLines();
@@ -46,19 +53,30 @@ class Link {
         glm::vec3           centerPos;
         glm::vec3           centerRot;
 
-        glm::mat4           pose;
-        glm::mat4           poseOffset;
-        ci::vec3            poseTransOffset;
-        ci::vec3            poseRotOffset;
+        glm::mat4           linkPose;
+        ci::vec3            linkPoseTrans;
+        
+        glm::mat4           jointPose;
+        ci::vec3            jointPoseTrans;
+        ci::vec3            jointPoseRot;
+        ci::vec3            alignmentAxis;
+        ci::vec3            parentRotAxis;       // the axis about which this link will rotate
+        int                 rotationDirection;
+        int                 rotationAxis;
+
+        float               zeroJointAngle;      // angle required for 'T-pose'
+        float               initialJointAngle;
         float               jointAngle;
+        float               totalJointAngle;
+        float               alignmentAngle;      // used for joint alignment before applying motor angle rotation
 
         motorStats          motor;
 
         bool                visible;
         bool                isRoot;
 
-        std::vector<Link>   parents;
-        std::vector<Link>   children;
+        std::vector<LinkRef>   parents;
+        std::vector<LinkRef>   children;
 
         ci::vec3            size;
         float               mass;
