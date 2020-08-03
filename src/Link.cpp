@@ -36,58 +36,22 @@ void Link::setPoses()
 
 			updateTotalJointAngle();
 
-			jointPoseTrans     = parents[parentIndex]->mountingPoints[parentMountIndex].first;
-			ci::vec3 thisRotAxis   = mountingPoints[thisMountIndex].second;
-			parentRotAxis = normalize( parents[parentIndex]->mountingPoints[parentMountIndex].second );
-
-			// ci::vec3 x_axis(1,0,0);
-			// ci::vec3 y_axis(0,1,0);
-			// ci::vec3 z_axis(0,0,1);
-
-			// ci::vec2 thisRot_zy(thisRot.z, thisRot.y);
-			// ci::vec2 thisRot_xz(thisRot.x, thisRot.z);
-			// ci::vec2 thisRot_yx(thisRot.y, thisRot.x);
-			// ci::vec2 parentRot_zy(parentRot.z, parentRot.y);
-			// ci::vec2 parentRot_xz(parentRot.x, parentRot.z);
-			// ci::vec2 parentRot_yx(parentRot.y, parentRot.x);
-
-			// jointPoseRot.x = acos( ci::dot( thisRot_zy, parentRot_zy ) );
-			// jointPoseRot.y = acos( ci::dot( thisRot_xz, parentRot_xz ) );
-			// jointPoseRot.z = acos( ci::dot( thisRot_yx, parentRot_yx ) );
-
-			// if (rotationAxis == 0)
-			// {
-			// 	jointPose  = glm::translate ( jointPoseTrans )
-			// 			   * glm::toMat4 ( glm::angleAxis( rotationDirection * (zeroJointAngle + initialJointAngle), ci::vec3 ( 1, 0, 0 ) ) )
-			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.y, ci::vec3 ( 0, 1, 0 ) ) )
-			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.z, ci::vec3 ( 0, 0, 1 ) ) );
-			// }
-			// else if (rotationAxis == 1)
-			// {
-			// 	jointPose  = glm::translate ( jointPoseTrans )
-			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.x, ci::vec3 ( 1, 0, 0 ) ) )
-			// 			   * glm::toMat4 ( glm::angleAxis( rotationDirection * (zeroJointAngle + initialJointAngle), ci::vec3 ( 0, 1, 0 ) ) )
-			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.z, ci::vec3 ( 0, 0, 1 ) ) );
-			// }
-			// else if (rotationAxis == 2)
-			// {
-			// 	jointPose  = glm::translate ( jointPoseTrans )
-			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.x, ci::vec3 ( 1, 0, 0 ) ) )
-			// 			   * glm::toMat4 ( glm::angleAxis( jointPoseRot.y, ci::vec3 ( 0, 1, 0 ) ) )
-			// 			   * glm::toMat4 ( glm::angleAxis( rotationDirection * (zeroJointAngle + initialJointAngle), ci::vec3 ( 0, 0, 1 ) ) );
-			// }
-
 			// always align the z-axis of next joint to mountingPoint of previous link using axis alignment
 
-
-			alignmentAngle = acos( dot(thisRotAxis, parentRotAxis) );
-			alignmentAxis = normalize( cross(thisRotAxis, parentRotAxis) );
-			fprintf(stderr, "\nalignmentaxis: %f, %f, %f", alignmentAxis.x, alignmentAxis.y, alignmentAxis.z);
-			fprintf(stderr, "\nalignmentangle: %f",alignmentAngle);
+			jointPoseTrans = parents[parentIndex]->mountingPoints[parentMountIndex].first;
+			thisRotAxis    = ci::normalize( mountingPoints[thisMountIndex].second );
+			parentRotAxis  = ci::normalize( parents[parentIndex]->mountingPoints[parentMountIndex].second );
+			
+			alignmentAngle = acos( ci::dot(thisRotAxis, parentRotAxis) );
+			alignmentAxis = ci::normalize( ci::cross(thisRotAxis, parentRotAxis) );
+			if (isnan(alignmentAxis.x)) // result of cross product for identical vectors is 0, and normalized zero vector is nan
+			{
+				alignmentAxis = parentRotAxis;
+			}
 
 			jointPose = glm::translate( jointPoseTrans )
 					  * glm::toMat4( glm::angleAxis( alignmentAngle, alignmentAxis ) )
-			   		  * glm::toMat4( glm::angleAxis( totalJointAngle, parentRotAxis ) );
+			   		  * glm::toMat4( glm::angleAxis( rotationDirection * totalJointAngle, thisRotAxis ) );
 		}
 		else
 		{
@@ -103,36 +67,32 @@ void Link::setPoses()
 		linkPoseTrans.z = 0;
 		linkPose        = glm::translate ( linkPoseTrans );
 	}
-
+	else
+	{
+		jointPose = glm::translate( jointPoseTrans )
+				  * glm::toMat4( glm::angleAxis( jointPoseRot.x, ci::vec3(1,0,0) ) )
+				  * glm::toMat4( glm::angleAxis( jointPoseRot.y, ci::vec3(0,1,0) ) )
+				  * glm::toMat4( glm::angleAxis( jointPoseRot.z, ci::vec3(0,0,1) ) );
+	}
 }
 
 void Link::updateJointPose()
 {
 	updateTotalJointAngle();
-	// if (rotationAxis == 0)
-	// {
-	// 	jointPose  = glm::translate ( jointPoseTrans )
-	// 			* glm::toMat4 ( glm::angleAxis( rotationDirection * totalJointAngle, ci::vec3 ( 1, 0, 0 ) ) )
-	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.y, ci::vec3 ( 0, 1, 0 ) ) )
-	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.z, ci::vec3 ( 0, 0, 1 ) ) );
-	// }
-	// else if (rotationAxis == 1)
-	// {
-	// 	jointPose  = glm::translate ( jointPoseTrans )
-	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.x, ci::vec3 ( 1, 0, 0 ) ) )
-	// 			* glm::toMat4 ( glm::angleAxis( rotationDirection * totalJointAngle, ci::vec3 ( 0, 1, 0 ) ) )
-	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.z, ci::vec3 ( 0, 0, 1 ) ) );
-	// }
-	// else if (rotationAxis == 2)
-	// {
-	// 	jointPose  = glm::translate ( jointPoseTrans )
-	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.x, ci::vec3 ( 1, 0, 0 ) ) )
-	// 			* glm::toMat4 ( glm::angleAxis( jointPoseRot.y, ci::vec3 ( 0, 1, 0 ) ) )
-	// 			* glm::toMat4 ( glm::angleAxis( rotationDirection * totalJointAngle, ci::vec3 ( 0, 0, 1 ) ) );
-	// }
-	jointPose  = glm::translate ( jointPoseTrans )
-			   * glm::toMat4( glm::angleAxis( alignmentAngle, alignmentAxis ) )
-			   * glm::toMat4( glm::angleAxis( totalJointAngle, parentRotAxis ) );
+	
+	if (!isRoot)
+	{
+		jointPose  = glm::translate ( jointPoseTrans )
+				* glm::toMat4( glm::angleAxis( alignmentAngle, alignmentAxis ) )
+				* glm::toMat4( glm::angleAxis( rotationDirection * totalJointAngle, thisRotAxis ) );
+	}
+	else
+	{
+		jointPose = glm::translate( jointPoseTrans )
+				  * glm::toMat4( glm::angleAxis( jointPoseRot.x, ci::vec3(1,0,0) ) )
+				  * glm::toMat4( glm::angleAxis( jointPoseRot.y, ci::vec3(0,1,0) ) )
+				  * glm::toMat4( glm::angleAxis( jointPoseRot.z, ci::vec3(0,0,1) ) );
+	}
 }
 
 void Link::updateTotalJointAngle()

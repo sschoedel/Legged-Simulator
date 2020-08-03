@@ -111,7 +111,7 @@ void Scene::drawModelShadows(LinkRef &parent)
 	
     //Draw part shadows here
 	ci::gl::pushModelMatrix();
-	drawPart( parent, true);
+	drawPart( parent, true );
 	ci::gl::popModelMatrix();
 }
 

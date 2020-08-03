@@ -41,24 +41,49 @@ void Gui::updateScene(Scene &scene, Robot &bot)
 	if (ImGui::Button("Toggle Joint Axes", ImVec2(200,30))) { bot.showLinkAxes = !bot.showLinkAxes; }
 	if (ImGui::Button("Toggle Motor Rotation Vis", ImVec2(200,30))) { bot.showFullRotation = !bot.showFullRotation; }
 	if (ImGui::Button("Toggle Motor Torque Vis", ImVec2(200,30))) { bot.showMotorTorques = !bot.showMotorTorques; }
+	ImGui::Separator();
 	
 	ImGui::MenuItem("Show links", nullptr, true);
 	if (ImGui::Button("Toggle body", ImVec2(200,30))) { bot.body->visible = !bot.body->visible; }
+	ImGui::Separator();
 
 	if (ImGui::Button("Toggle FLS", ImVec2(200,30))) { bot.FLS->visible = !bot.FLS->visible; }
 	if (ImGui::Button("Toggle FRS", ImVec2(200,30))) { bot.FRS->visible = !bot.FRS->visible; }
 	if (ImGui::Button("Toggle BLS", ImVec2(200,30))) { bot.BLS->visible = !bot.BLS->visible; }
 	if (ImGui::Button("Toggle BRS", ImVec2(200,30))) { bot.BRS->visible = !bot.BRS->visible; }
+	ImGui::Separator();
 
 	if (ImGui::Button("Toggle FLU", ImVec2(200,30))) { bot.FLU->visible = !bot.FLU->visible; }
 	if (ImGui::Button("Toggle FRU", ImVec2(200,30))) { bot.FRU->visible = !bot.FRU->visible; }
 	if (ImGui::Button("Toggle BLU", ImVec2(200,30))) { bot.BLU->visible = !bot.BLU->visible; }
 	if (ImGui::Button("Toggle BRU", ImVec2(200,30))) { bot.BRU->visible = !bot.BRU->visible; }
+	ImGui::Separator();
 
 	if (ImGui::Button("Toggle FLL", ImVec2(200,30))) { bot.FLL->visible = !bot.FLL->visible; }
 	if (ImGui::Button("Toggle FRL", ImVec2(200,30))) { bot.FRL->visible = !bot.FRL->visible; }
 	if (ImGui::Button("Toggle BLL", ImVec2(200,30))) { bot.BLL->visible = !bot.BLL->visible; }
 	if (ImGui::Button("Toggle BRL", ImVec2(200,30))) { bot.BRL->visible = !bot.BRL->visible; }
+	ImGui::Separator();
+	if (ImGui::Button("Toggle all", ImVec2(200,30))) { 
+		bot.body->visible = bot.showAll;
+		
+		bot.FLS->visible = bot.showAll;
+		bot.FRS->visible = bot.showAll;
+		bot.BLS->visible = bot.showAll;
+		bot.BRS->visible = bot.showAll;
+
+		bot.FLU->visible = bot.showAll;
+		bot.FRU->visible = bot.showAll;
+		bot.BLU->visible = bot.showAll;
+		bot.BRU->visible = bot.showAll;
+
+		bot.FLL->visible = bot.showAll;
+		bot.FRL->visible = bot.showAll;
+		bot.BLL->visible = bot.showAll;
+		bot.BRL->visible = bot.showAll;
+
+		bot.showAll = !bot.showAll;
+	}
 	ImGui::End();
 }
 
@@ -102,9 +127,9 @@ void Gui::updateRobotConfig(Robot &robot)
 	ImGui::Separator();
 	ImGui::Separator();
 	ImGui::Separator();
-	ImGui::MenuItem("FRL TESTS", nullptr, true);
-	ImGui::DragFloat("FRL x", &robot.FRL->jointPoseRot.x, 0.01, -3.1415, 3.1415);
-	ImGui::DragFloat("FRL y", &robot.FRL->jointPoseRot.y, 0.01, -3.1415, 3.1415);
-	ImGui::DragFloat("FRL z", &robot.FRL->jointPoseRot.z, 0.01, -3.1415, 3.1415);
+	// ImGui::MenuItem("FRL TESTS", nullptr, true);
+	// ImGui::DragFloat("FRL x", &robot.FRL->jointPoseRot.x, 0.01, -3.1415, 3.1415);
+	// ImGui::DragFloat("FRL y", &robot.FRL->jointPoseRot.y, 0.01, -3.1415, 3.1415);
+	// ImGui::DragFloat("FRL z", &robot.FRL->jointPoseRot.z, 0.01, -3.1415, 3.1415);
 	ImGui::End();
 }

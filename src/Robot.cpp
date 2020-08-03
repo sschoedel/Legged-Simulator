@@ -12,7 +12,6 @@ void Robot::setup(ci::gl::GlslProgRef mGlslShadow)
 	body->setup(true, rootConfig.rootMass, "root", rootConfig.rootShape, mGlslShadow, rootConfig.size, rootConfig.mountingPoints, -1, -1, rootConfig.rootColor, 0,0,0); // -1 because root doesn't have parent links
 	// set initial position and rotation for body
 	body->jointPoseTrans = rootConfig.initialrootPos;
-	body->jointPoseRot   = rootConfig.initialrootRot;
 
 
 	// TODO: Left and right sides of shoulders and legs will be different
@@ -39,32 +38,40 @@ void Robot::setup(ci::gl::GlslProgRef mGlslShadow)
 			   backRightShoulderConfig.thisMountIndex, BRS_parentMountIndex, backRightShoulderConfig.color, backRightShoulderConfig.zeroJointAngle, backRightShoulderConfig.rotationDirection, backRightShoulderConfig.rotationAxis);
 
 	// leg upper
-	leftUpperLegConfig.mountingPoints.push_back(std::make_pair(leftUpperLegConfig.mtPt1, leftUpperLegConfig.mtDir1));
-	leftUpperLegConfig.mountingPoints.push_back(std::make_pair(leftUpperLegConfig.mtPt2, leftUpperLegConfig.mtDir2));
-	rightUpperLegConfig.mountingPoints.push_back(std::make_pair(rightUpperLegConfig.mtPt1, rightUpperLegConfig.mtDir1));
-	rightUpperLegConfig.mountingPoints.push_back(std::make_pair(rightUpperLegConfig.mtPt2, rightUpperLegConfig.mtDir2));
-	FLU->setup(false, leftUpperLegConfig.mass, "FLU", leftUpperLegConfig.upperLegShape, mGlslShadow, leftUpperLegConfig.size, leftUpperLegConfig.mountingPoints,
-			   leftUpperLegConfig.thisMountIndex, leftUpperLegConfig.parentMountIndex, leftUpperLegConfig.color, leftUpperLegConfig.zeroJointAngle, leftUpperLegConfig.rotationDirection, leftUpperLegConfig.rotationAxis);
-	FRU->setup(false, rightUpperLegConfig.mass, "FRU", rightUpperLegConfig.upperLegShape, mGlslShadow, rightUpperLegConfig.size, rightUpperLegConfig.mountingPoints,
-			   rightUpperLegConfig.thisMountIndex, rightUpperLegConfig.parentMountIndex, rightUpperLegConfig.color, rightUpperLegConfig.zeroJointAngle, rightUpperLegConfig.rotationDirection, rightUpperLegConfig.rotationAxis);
-	BLU->setup(false, leftUpperLegConfig.mass, "BLU", leftUpperLegConfig.upperLegShape, mGlslShadow, leftUpperLegConfig.size, leftUpperLegConfig.mountingPoints,
-			   leftUpperLegConfig.thisMountIndex, leftUpperLegConfig.parentMountIndex, leftUpperLegConfig.color, leftUpperLegConfig.zeroJointAngle, leftUpperLegConfig.rotationDirection, leftUpperLegConfig.rotationAxis);
-	BRU->setup(false, rightUpperLegConfig.mass, "BRU", rightUpperLegConfig.upperLegShape, mGlslShadow, rightUpperLegConfig.size, rightUpperLegConfig.mountingPoints,
-			   rightUpperLegConfig.thisMountIndex, rightUpperLegConfig.parentMountIndex, rightUpperLegConfig.color, rightUpperLegConfig.zeroJointAngle, rightUpperLegConfig.rotationDirection, rightUpperLegConfig.rotationAxis);
+	frontLeftUpperLegConfig.mountingPoints.push_back(std::make_pair(frontLeftUpperLegConfig.mtPt1, frontLeftUpperLegConfig.mtDir1));
+	frontLeftUpperLegConfig.mountingPoints.push_back(std::make_pair(frontLeftUpperLegConfig.mtPt2, frontLeftUpperLegConfig.mtDir2));
+	frontRightUpperLegConfig.mountingPoints.push_back(std::make_pair(frontRightUpperLegConfig.mtPt1, frontRightUpperLegConfig.mtDir1));
+	frontRightUpperLegConfig.mountingPoints.push_back(std::make_pair(frontRightUpperLegConfig.mtPt2, frontRightUpperLegConfig.mtDir2));
+	backLeftUpperLegConfig.mountingPoints.push_back(std::make_pair(backLeftUpperLegConfig.mtPt1, backLeftUpperLegConfig.mtDir1));
+	backLeftUpperLegConfig.mountingPoints.push_back(std::make_pair(backLeftUpperLegConfig.mtPt2, backLeftUpperLegConfig.mtDir2));
+	backRightUpperLegConfig.mountingPoints.push_back(std::make_pair(backRightUpperLegConfig.mtPt1, backRightUpperLegConfig.mtDir1));
+	backRightUpperLegConfig.mountingPoints.push_back(std::make_pair(backRightUpperLegConfig.mtPt2, backRightUpperLegConfig.mtDir2));
+	FLU->setup(false, frontLeftUpperLegConfig.mass, "FLU", frontLeftUpperLegConfig.upperLegShape, mGlslShadow, frontLeftUpperLegConfig.size, frontLeftUpperLegConfig.mountingPoints,
+			   frontLeftUpperLegConfig.thisMountIndex, frontLeftUpperLegConfig.parentMountIndex, frontLeftUpperLegConfig.color, frontLeftUpperLegConfig.zeroJointAngle, frontLeftUpperLegConfig.rotationDirection, frontLeftUpperLegConfig.rotationAxis);
+	FRU->setup(false, frontRightUpperLegConfig.mass, "FRU", frontRightUpperLegConfig.upperLegShape, mGlslShadow, frontRightUpperLegConfig.size, frontRightUpperLegConfig.mountingPoints,
+			   frontRightUpperLegConfig.thisMountIndex, frontRightUpperLegConfig.parentMountIndex, frontRightUpperLegConfig.color, frontRightUpperLegConfig.zeroJointAngle, frontRightUpperLegConfig.rotationDirection, frontRightUpperLegConfig.rotationAxis);
+	BLU->setup(false, backLeftUpperLegConfig.mass, "BLU", backLeftUpperLegConfig.upperLegShape, mGlslShadow, backLeftUpperLegConfig.size, backLeftUpperLegConfig.mountingPoints,
+			   backLeftUpperLegConfig.thisMountIndex, backLeftUpperLegConfig.parentMountIndex, backLeftUpperLegConfig.color, backLeftUpperLegConfig.zeroJointAngle, backLeftUpperLegConfig.rotationDirection, backLeftUpperLegConfig.rotationAxis);
+	BRU->setup(false, backRightUpperLegConfig.mass, "BRU", backRightUpperLegConfig.upperLegShape, mGlslShadow, backRightUpperLegConfig.size, backRightUpperLegConfig.mountingPoints,
+			   backRightUpperLegConfig.thisMountIndex, backRightUpperLegConfig.parentMountIndex, backRightUpperLegConfig.color, backRightUpperLegConfig.zeroJointAngle, backRightUpperLegConfig.rotationDirection, backRightUpperLegConfig.rotationAxis);
 
 	// leg lower
-	leftLowerLegConfig.mountingPoints.push_back(std::make_pair(leftLowerLegConfig.mtPt1, leftLowerLegConfig.mtDir1));
-	leftLowerLegConfig.mountingPoints.push_back(std::make_pair(leftLowerLegConfig.mtPt2, leftLowerLegConfig.mtDir2));
-	rightLowerLegConfig.mountingPoints.push_back(std::make_pair(rightLowerLegConfig.mtPt1, rightLowerLegConfig.mtDir1));
-	rightLowerLegConfig.mountingPoints.push_back(std::make_pair(rightLowerLegConfig.mtPt2, rightLowerLegConfig.mtDir2));
-	FLL->setup(false, leftLowerLegConfig.mass, "FLL", leftLowerLegConfig.lowerLegShape, mGlslShadow, leftLowerLegConfig.size, leftLowerLegConfig.mountingPoints,
-			   leftLowerLegConfig.thisMountIndex, leftLowerLegConfig.parentMountIndex, leftLowerLegConfig.color, leftLowerLegConfig.zeroJointAngle, leftLowerLegConfig.rotationDirection, leftLowerLegConfig.rotationAxis);
-	FRL->setup(false, rightLowerLegConfig.mass, "FRL", rightLowerLegConfig.lowerLegShape, mGlslShadow, rightLowerLegConfig.size, rightLowerLegConfig.mountingPoints,
-			   rightLowerLegConfig.thisMountIndex, rightLowerLegConfig.parentMountIndex, rightLowerLegConfig.color, rightLowerLegConfig.zeroJointAngle, rightLowerLegConfig.rotationDirection, rightLowerLegConfig.rotationAxis);
-	BLL->setup(false, leftLowerLegConfig.mass, "BLL", leftLowerLegConfig.lowerLegShape, mGlslShadow, leftLowerLegConfig.size, leftLowerLegConfig.mountingPoints,
-			   leftLowerLegConfig.thisMountIndex, leftLowerLegConfig.parentMountIndex, leftLowerLegConfig.color, leftLowerLegConfig.zeroJointAngle, leftLowerLegConfig.rotationDirection, leftLowerLegConfig.rotationAxis);
-	BRL->setup(false, rightLowerLegConfig.mass, "BRL", rightLowerLegConfig.lowerLegShape, mGlslShadow, rightLowerLegConfig.size, rightLowerLegConfig.mountingPoints,
-			   rightLowerLegConfig.thisMountIndex, rightLowerLegConfig.parentMountIndex, rightLowerLegConfig.color, rightLowerLegConfig.zeroJointAngle, rightLowerLegConfig.rotationDirection, rightLowerLegConfig.rotationAxis);
+	frontLeftLowerLegConfig.mountingPoints.push_back(std::make_pair(frontLeftLowerLegConfig.mtPt1, frontLeftLowerLegConfig.mtDir1));
+	frontLeftLowerLegConfig.mountingPoints.push_back(std::make_pair(frontLeftLowerLegConfig.mtPt2, frontLeftLowerLegConfig.mtDir2));
+	frontRightLowerLegConfig.mountingPoints.push_back(std::make_pair(frontRightLowerLegConfig.mtPt1, frontRightLowerLegConfig.mtDir1));
+	frontRightLowerLegConfig.mountingPoints.push_back(std::make_pair(frontRightLowerLegConfig.mtPt2, frontRightLowerLegConfig.mtDir2));
+	backLeftLowerLegConfig.mountingPoints.push_back(std::make_pair(backLeftLowerLegConfig.mtPt1, backLeftLowerLegConfig.mtDir1));
+	backLeftLowerLegConfig.mountingPoints.push_back(std::make_pair(backLeftLowerLegConfig.mtPt2, backLeftLowerLegConfig.mtDir2));
+	backRightLowerLegConfig.mountingPoints.push_back(std::make_pair(backRightLowerLegConfig.mtPt1, backRightLowerLegConfig.mtDir1));
+	backRightLowerLegConfig.mountingPoints.push_back(std::make_pair(backRightLowerLegConfig.mtPt2, backRightLowerLegConfig.mtDir2));
+	FLL->setup(false, frontLeftLowerLegConfig.mass, "FLL", frontLeftLowerLegConfig.lowerLegShape, mGlslShadow, frontLeftLowerLegConfig.size, frontLeftLowerLegConfig.mountingPoints,
+			   frontLeftLowerLegConfig.thisMountIndex, frontLeftLowerLegConfig.parentMountIndex, frontLeftLowerLegConfig.color, frontLeftLowerLegConfig.zeroJointAngle, frontLeftLowerLegConfig.rotationDirection, frontLeftLowerLegConfig.rotationAxis);
+	FRL->setup(false, frontRightLowerLegConfig.mass, "FRL", frontRightLowerLegConfig.lowerLegShape, mGlslShadow, frontRightLowerLegConfig.size, frontRightLowerLegConfig.mountingPoints,
+			   frontRightLowerLegConfig.thisMountIndex, frontRightLowerLegConfig.parentMountIndex, frontRightLowerLegConfig.color, frontRightLowerLegConfig.zeroJointAngle, frontRightLowerLegConfig.rotationDirection, frontRightLowerLegConfig.rotationAxis);
+	BLL->setup(false, backLeftLowerLegConfig.mass, "BLL", backLeftLowerLegConfig.lowerLegShape, mGlslShadow, backLeftLowerLegConfig.size, backLeftLowerLegConfig.mountingPoints,
+			   backLeftLowerLegConfig.thisMountIndex, backLeftLowerLegConfig.parentMountIndex, backLeftLowerLegConfig.color, backLeftLowerLegConfig.zeroJointAngle, backLeftLowerLegConfig.rotationDirection, backLeftLowerLegConfig.rotationAxis);
+	BRL->setup(false, backRightLowerLegConfig.mass, "BRL", backRightLowerLegConfig.lowerLegShape, mGlslShadow, backRightLowerLegConfig.size, backRightLowerLegConfig.mountingPoints,
+			   backRightLowerLegConfig.thisMountIndex, backRightLowerLegConfig.parentMountIndex, backRightLowerLegConfig.color, backRightLowerLegConfig.zeroJointAngle, backRightLowerLegConfig.rotationDirection, backRightLowerLegConfig.rotationAxis);
 
 	setChildren();
 	
