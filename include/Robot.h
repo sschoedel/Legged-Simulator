@@ -10,10 +10,16 @@
 #include "robot_description/configs/shoulder_config_front_right.h"
 #include "robot_description/configs/shoulder_config_back_left.h"
 #include "robot_description/configs/shoulder_config_back_right.h"
-#include "robot_description/configs/upper_leg_config_left.h"
-#include "robot_description/configs/lower_leg_config_left.h"
-#include "robot_description/configs/upper_leg_config_right.h"
-#include "robot_description/configs/lower_leg_config_right.h"
+
+#include "robot_description/configs/upper_leg_config_front_left.h"
+#include "robot_description/configs/upper_leg_config_front_right.h"
+#include "robot_description/configs/upper_leg_config_back_left.h"
+#include "robot_description/configs/upper_leg_config_back_right.h"
+
+#include "robot_description/configs/lower_leg_config_front_left.h"
+#include "robot_description/configs/lower_leg_config_front_right.h"
+#include "robot_description/configs/lower_leg_config_back_left.h"
+#include "robot_description/configs/lower_leg_config_back_right.h"
 
 class Robot
 {
@@ -34,10 +40,16 @@ class Robot
         BackLeftShoulderConfig backLeftShoulderConfig;
         FrontRightShoulderConfig frontRightShoulderConfig;
         BackRightShoulderConfig backRightShoulderConfig;
-        LeftLowerLegConfig leftLowerLegConfig;
-        LeftUpperLegConfig leftUpperLegConfig;
-        RightLowerLegConfig rightLowerLegConfig;
-        RightUpperLegConfig rightUpperLegConfig;
+
+        FrontLeftUpperLegConfig frontLeftUpperLegConfig;
+        FrontRightUpperLegConfig frontRightUpperLegConfig;
+        BackLeftUpperLegConfig backLeftUpperLegConfig;
+        BackRightUpperLegConfig backRightUpperLegConfig;
+
+        FrontLeftLowerLegConfig frontLeftLowerLegConfig;
+        FrontRightLowerLegConfig frontRightLowerLegConfig;
+        FrontLeftLowerLegConfig backLeftLowerLegConfig;
+        FrontRightLowerLegConfig backRightLowerLegConfig;
 
         LinkRef body = Link::create();
         LinkRef FLS  = Link::create();
@@ -58,5 +70,6 @@ class Robot
         bool showLinkAxes;
         bool showFullRotation;
         bool showMotorTorques;
+        bool showAll;
 };
 

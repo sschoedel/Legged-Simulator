@@ -60,7 +60,8 @@ class Link {
         ci::vec3            jointPoseTrans;
         ci::vec3            jointPoseRot;
         ci::vec3            alignmentAxis;
-        ci::vec3            parentRotAxis;       // the axis about which this link will rotate
+        ci::vec3            parentRotAxis;       
+        // ci::vec3        thisRotationAxis;
         int                 rotationDirection;
         int                 rotationAxis;
 
@@ -95,4 +96,8 @@ class Link {
         // ci::Color           mountingPtAxesColor_x   = ci::Color(1.0,0.0,0.0); // red
         // ci::Color           mountingPtAxesColor_y   = ci::Color(0.0,1.0,0.0); // green
         // ci::Color           mountingPtAxesColor_z   = ci::Color(0.0,0.0,1.0); // blue
+
+        // Q: What is this bug? Instantiating thisRotAxis (or any variable name) somewhere between jointPose and zeroJointAngle causes the model to not draw
+        // This bug doesn't happen when its instantiated at the bottom of the header. wtf
+        ci::vec3            thisRotAxis;         // the axis about which this link will rotate - same axis used to align to the previous link's mounting axis
 };
