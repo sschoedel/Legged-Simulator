@@ -6,7 +6,7 @@
 class RootConfig
 {
     public:
-        int                 length          = 40;
+        int                 length          = 50;
         int                 width           = 8;
         int                 height          = 20;
         ci::vec3            size            = ci::vec3(length, width, height);    

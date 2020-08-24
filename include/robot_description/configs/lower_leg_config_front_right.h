@@ -17,7 +17,7 @@ class FrontRightLowerLegConfig
         int                 rotationAxis      = 0;
 
         float               zeroJointAngle    = 0;
-        float               initialJointAngle = 0;
+        float               initialJointAngle = 0; //1.571;
 
         // object coordinates
         std::vector<std::pair<ci::vec3, ci::vec3>> mountingPoints;

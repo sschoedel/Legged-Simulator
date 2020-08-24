@@ -3,13 +3,14 @@
 
 void SimulationApp::setup()
 {
+	scene.setup();
+	
 	setWindowSize(2650, 1920);
 	setWindowPos(0, 0);
 	gl::enableVerticalSync();
-	setFrameRate(30);
+	setFrameRate(scene.framesPerSecond);
 
 	scene.camera.setCam();
-	scene.setup();
 	bot.setup(scene.getPartShadow());
 
 	gl::enableDepthRead();
@@ -19,17 +20,16 @@ void SimulationApp::setup()
 void SimulationApp::update()
 {
 	// Store time so each render pass uses the same value
+	mTime = getElapsedSeconds();
 
-	// gui.updateCameraGUI(scene.camera);
-	// gui.updateCamera(scene.camera);
 	gui.updateScene(scene, bot);
     gui.updateRobotControl(bot);
     gui.updateRobotConfig(bot);
 
-	// scene.setPart(bot.body);
-	// bot.setChildren();
 	bot.calcPoses(bot.body);
-	// bot.calcPoses(bot.body.children[0]);
+	bot.calculateTorques(bot.body); // inverse dynamics
+	bot.applyTorques(bot.body); // animate links
+	// TODO: add ragdoll physics to this - all link forces are nonlinear
 }
 
 void SimulationApp::draw()

@@ -17,7 +17,7 @@ class BackLeftUpperLegConfig
         int                 rotationAxis      = 0;
         
         float               zeroJointAngle    = -1.571;
-        float               initialJointAngle = 0;
+        float               initialJointAngle = 0; //0.785;
 
         // Object coordinates
         std::vector<std::pair<ci::vec3, ci::vec3>> mountingPoints;

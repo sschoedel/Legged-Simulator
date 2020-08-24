@@ -31,6 +31,9 @@ class Robot
         void clearFamily(LinkRef &root);
         void setChildren();
         void visualizePartVars(LinkRef &parent, std::vector<glm::mat4> prevPoses);
+
+        void calculateTorques(LinkRef &parents);
+        void applyTorques(LinkRef &parent);
         
         glm::mat4 calcPartPose(float tx, float ty, float tz, float rotx, float roty, float rotz, float scale);
 
@@ -69,6 +72,7 @@ class Robot
         bool showMtPtAxes;
         bool showLinkAxes;
         bool showFullRotation;
+        bool showCurrentRotations;
         bool showMotorTorques;
         bool showAll;
 };

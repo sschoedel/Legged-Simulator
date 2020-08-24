@@ -35,12 +35,13 @@ void Gui::updateScene(Scene &scene, Robot &bot)
 {
 	ImGui::SetNextWindowCollapsed( false, ImGuiCond_FirstUseEver );
 	ImGui::Begin( "Scene" );
-	if (ImGui::Button("Toggle Floor", ImVec2(200,30))) { scene.showFloor = !scene.showFloor; }
-	if (ImGui::Button("Toggle Mounting Point Lines", ImVec2(200,30))) { bot.showMtPtLines = !bot.showMtPtLines; }
-	if (ImGui::Button("Toggle Mounting Point Axes", ImVec2(200,30))) { bot.showMtPtAxes = !bot.showMtPtAxes; }
-	if (ImGui::Button("Toggle Joint Axes", ImVec2(200,30))) { bot.showLinkAxes = !bot.showLinkAxes; }
-	if (ImGui::Button("Toggle Motor Rotation Vis", ImVec2(200,30))) { bot.showFullRotation = !bot.showFullRotation; }
-	if (ImGui::Button("Toggle Motor Torque Vis", ImVec2(200,30))) { bot.showMotorTorques = !bot.showMotorTorques; }
+	if (ImGui::Button("Toggle Floor", ImVec2(200,30))) 					{ scene.showFloor = !scene.showFloor; }
+	if (ImGui::Button("Toggle Mounting Point Lines", ImVec2(200,30))) 	{ bot.showMtPtLines = !bot.showMtPtLines; }
+	if (ImGui::Button("Toggle Mounting Point Axes", ImVec2(200,30))) 	{ bot.showMtPtAxes = !bot.showMtPtAxes; }
+	if (ImGui::Button("Toggle Joint Axes", ImVec2(200,30))) 			{ bot.showLinkAxes = !bot.showLinkAxes; }
+	if (ImGui::Button("Toggle Motor Rotation Bounds", ImVec2(200,30))) 	{ bot.showFullRotation = !bot.showFullRotation; }
+	if (ImGui::Button("Toggle Motor Rotation Vis", ImVec2(200,30))) 	{ bot.showCurrentRotations = !bot.showCurrentRotations; }
+	if (ImGui::Button("Toggle Motor Torque Vis", ImVec2(200,30))) 		{ bot.showMotorTorques = !bot.showMotorTorques; }
 	ImGui::Separator();
 	
 	ImGui::MenuItem("Show links", nullptr, true);
@@ -124,12 +125,10 @@ void Gui::updateRobotConfig(Robot &robot)
 	ImGui::DragFloat("BLL jointAngle", &robot.BLL->jointAngle, 0.01, -3.1415, 3.1415);
 	ImGui::DragFloat("BRL jointAngle", &robot.BRL->jointAngle, 0.01, -3.1415, 3.1415);
 	ImGui::Separator();
-	ImGui::Separator();
-	ImGui::Separator();
-	ImGui::Separator();
-	// ImGui::MenuItem("FRL TESTS", nullptr, true);
-	// ImGui::DragFloat("FRL x", &robot.FRL->jointPoseRot.x, 0.01, -3.1415, 3.1415);
-	// ImGui::DragFloat("FRL y", &robot.FRL->jointPoseRot.y, 0.01, -3.1415, 3.1415);
-	// ImGui::DragFloat("FRL z", &robot.FRL->jointPoseRot.z, 0.01, -3.1415, 3.1415);
+	ImGui::MenuItem("Leg torques", nullptr, true);
+	ImGui::DragFloat("FLU torque", &robot.FLL->motor.appliedTorque, 1, -100, 100);
+	ImGui::DragFloat("FRU torque", &robot.FRL->motor.appliedTorque, 1, -100, 100);
+	ImGui::DragFloat("BLU torque", &robot.BLL->motor.appliedTorque, 1, -100, 100);
+	ImGui::DragFloat("BRU torque", &robot.BRL->motor.appliedTorque, 1, -100, 100);
 	ImGui::End();
 }

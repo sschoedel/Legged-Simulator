@@ -1,0 +1,37 @@
+[
+{
+  "directory": "/home/sam/gitlab-projects/Legged-Simulator/build",
+  "command": "/usr/bin/c++  -DCINDER_GL_CORE -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_GLFW_X11 -D_UNIX -I/home/sam/gitlab-projects/Legged-Simulator/include -I/home/sam/gitlab-projects/Legged-Simulator -isystem /home/sam/gitlab-projects/Legged-Simulator/Cinder/include  -g   -std=c++17 -o CMakeFiles/DogSim.dir/src/Robot.cpp.o -c /home/sam/gitlab-projects/Legged-Simulator/src/Robot.cpp",
+  "file": "/home/sam/gitlab-projects/Legged-Simulator/src/Robot.cpp"
+},
+{
+  "directory": "/home/sam/gitlab-projects/Legged-Simulator/build",
+  "command": "/usr/bin/c++  -DCINDER_GL_CORE -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_GLFW_X11 -D_UNIX -I/home/sam/gitlab-projects/Legged-Simulator/include -I/home/sam/gitlab-projects/Legged-Simulator -isystem /home/sam/gitlab-projects/Legged-Simulator/Cinder/include  -g   -std=c++17 -o CMakeFiles/DogSim.dir/src/simulator.cpp.o -c /home/sam/gitlab-projects/Legged-Simulator/src/simulator.cpp",
+  "file": "/home/sam/gitlab-projects/Legged-Simulator/src/simulator.cpp"
+},
+{
+  "directory": "/home/sam/gitlab-projects/Legged-Simulator/build",
+  "command": "/usr/bin/c++  -DCINDER_GL_CORE -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_GLFW_X11 -D_UNIX -I/home/sam/gitlab-projects/Legged-Simulator/include -I/home/sam/gitlab-projects/Legged-Simulator -isystem /home/sam/gitlab-projects/Legged-Simulator/Cinder/include  -g   -std=c++17 -o CMakeFiles/DogSim.dir/src/Mesh.cpp.o -c /home/sam/gitlab-projects/Legged-Simulator/src/Mesh.cpp",
+  "file": "/home/sam/gitlab-projects/Legged-Simulator/src/Mesh.cpp"
+},
+{
+  "directory": "/home/sam/gitlab-projects/Legged-Simulator/build",
+  "command": "/usr/bin/c++  -DCINDER_GL_CORE -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_GLFW_X11 -D_UNIX -I/home/sam/gitlab-projects/Legged-Simulator/include -I/home/sam/gitlab-projects/Legged-Simulator -isystem /home/sam/gitlab-projects/Legged-Simulator/Cinder/include  -g   -std=c++17 -o CMakeFiles/DogSim.dir/src/gui.cpp.o -c /home/sam/gitlab-projects/Legged-Simulator/src/gui.cpp",
+  "file": "/home/sam/gitlab-projects/Legged-Simulator/src/gui.cpp"
+},
+{
+  "directory": "/home/sam/gitlab-projects/Legged-Simulator/build",
+  "command": "/usr/bin/c++  -DCINDER_GL_CORE -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_GLFW_X11 -D_UNIX -I/home/sam/gitlab-projects/Legged-Simulator/include -I/home/sam/gitlab-projects/Legged-Simulator -isystem /home/sam/gitlab-projects/Legged-Simulator/Cinder/include  -g   -std=c++17 -o CMakeFiles/DogSim.dir/src/Camera.cpp.o -c /home/sam/gitlab-projects/Legged-Simulator/src/Camera.cpp",
+  "file": "/home/sam/gitlab-projects/Legged-Simulator/src/Camera.cpp"
+},
+{
+  "directory": "/home/sam/gitlab-projects/Legged-Simulator/build",
+  "command": "/usr/bin/c++  -DCINDER_GL_CORE -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_GLFW_X11 -D_UNIX -I/home/sam/gitlab-projects/Legged-Simulator/include -I/home/sam/gitlab-projects/Legged-Simulator -isystem /home/sam/gitlab-projects/Legged-Simulator/Cinder/include  -g   -std=c++17 -o CMakeFiles/DogSim.dir/src/Scene.cpp.o -c /home/sam/gitlab-projects/Legged-Simulator/src/Scene.cpp",
+  "file": "/home/sam/gitlab-projects/Legged-Simulator/src/Scene.cpp"
+},
+{
+  "directory": "/home/sam/gitlab-projects/Legged-Simulator/build",
+  "command": "/usr/bin/c++  -DCINDER_GL_CORE -DFT2_BUILD_LIBRARY -DFT_DEBUG_LEVEL_TRACE -D_GLFW_X11 -D_UNIX -I/home/sam/gitlab-projects/Legged-Simulator/include -I/home/sam/gitlab-projects/Legged-Simulator -isystem /home/sam/gitlab-projects/Legged-Simulator/Cinder/include  -g   -std=c++17 -o CMakeFiles/DogSim.dir/src/Link.cpp.o -c /home/sam/gitlab-projects/Legged-Simulator/src/Link.cpp",
+  "file": "/home/sam/gitlab-projects/Legged-Simulator/src/Link.cpp"
+}
+]

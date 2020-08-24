@@ -10,6 +10,8 @@ Scene::Scene()
 
 void Scene::setup()
 {
+	framesPerSecond = 30;
+	
 	ci::gl::Texture2d::Format depthFormat;
 	depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
 	depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );

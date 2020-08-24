@@ -4,17 +4,18 @@
 #include "cinder/gl/gl.h"
 #include <math.h>
 
-typedef struct
+struct _motorStats
 {
     float maxTorque;
     float maxAccel;
     float maxCurrent;
-    float torque;
+    float appliedTorque;
     float accel;
     float vel;
     float pos;
     float current;
-} motorStats;
+};
+typedef _motorStats MotorStats;
 
 class Link;
 typedef std::shared_ptr<Link> LinkRef;
@@ -25,7 +26,7 @@ class Link {
         static LinkRef create();
         Link() {};
         void setup(bool _isRoot, float _mass, std::string _name, const ci::geom::Source &shape, ci::gl::GlslProgRef mGlslShadow, ci::vec3 _size, std::vector<std::pair<ci::vec3, ci::vec3>> _mountingPoints, 
-                    int _thisMountIndex, int _parentMountIndex, ci::Color _pColor, float _jointAngle, int _rotationDirection, int _rotationAxis);
+                    int _thisMountIndex, int _parentMountIndex, ci::Color _pColor, float _zeroJointAngle, float _initialJointAngle, int _rotationDirection, int _rotationAxis);
         void setPoses();
         void updateJointPose();
         void addChild(LinkRef &link);
@@ -40,6 +41,7 @@ class Link {
         void drawMountingPtAxes();
         void drawJointGeomCenterAxes();
         void drawMotorRotationBounds();
+        void drawMotorRotations();
         void drawMotorCommandedTorques();
 
         // Ease of use drawing functions;
@@ -70,8 +72,10 @@ class Link {
         float               jointAngle;
         float               totalJointAngle;
         float               alignmentAngle;      // used for joint alignment before applying motor angle rotation
+        float               minJointAngle;
+        float               maxJointAngle;
 
-        motorStats          motor;
+        float               torqueOnJoint;
 
         bool                visible;
         bool                isRoot;
@@ -100,4 +104,5 @@ class Link {
         // Q: What is this bug? Instantiating thisRotAxis (or any variable name) somewhere between jointPose and zeroJointAngle causes the model to not draw
         // This bug doesn't happen when its instantiated at the bottom of the header. wtf
         ci::vec3            thisRotAxis;         // the axis about which this link will rotate - same axis used to align to the previous link's mounting axis
+        MotorStats          motor;
 };

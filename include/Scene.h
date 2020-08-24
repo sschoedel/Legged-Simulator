@@ -48,8 +48,10 @@ class Scene
         ci::CameraPersp			mLightCam;
         ci::gl::FboRef			mFbo;
         std::vector<Part>       parts;
-        ci::gl::BatchRef    mainBatch;
-        ci::gl::BatchRef    shadowedBatch;
+        ci::gl::BatchRef        mainBatch;
+        ci::gl::BatchRef        shadowedBatch;
+        int                     framesPerSecond;
+
     private:
         int	                    fboSize;
         bool                    shadowMap;
