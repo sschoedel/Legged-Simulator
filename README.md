@@ -1,1 +1,1 @@
-Simulator for legged robots
+Homemade simulator for legged robots
