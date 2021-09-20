@@ -1,1 +1,1 @@
-Homebrewsimulator for legged robots
+Homebrew simulator for legged robots
